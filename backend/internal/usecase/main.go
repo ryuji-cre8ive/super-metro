@@ -1,6 +1,6 @@
 package usecase
 
-import "github.com/ryuji-cre8ive/super-suica/internal/stores"
+import "github.com/ryuji-cre8ive/super-metro/internal/stores"
 
 type Usecase struct {
 	User UserUsecase

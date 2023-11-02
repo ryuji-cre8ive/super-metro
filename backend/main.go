@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
-	"github.com/ryuji-cre8ive/super-suica/internal/database"
-	"github.com/ryuji-cre8ive/super-suica/internal/stores"
-	"github.com/ryuji-cre8ive/super-suica/internal/ui"
-	"github.com/ryuji-cre8ive/super-suica/internal/usecase"
-	"golang.org/x/xerrors"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
+	"github.com/ryuji-cre8ive/super-metro/internal/database"
+	"github.com/ryuji-cre8ive/super-metro/internal/stores"
+	"github.com/ryuji-cre8ive/super-metro/internal/ui"
+	"github.com/ryuji-cre8ive/super-metro/internal/usecase"
+	"golang.org/x/xerrors"
 )
 
 func main() {
@@ -18,7 +19,10 @@ func main() {
 	if err != nil {
 		log.Fatal(xerrors.Errorf("failed to connect to database: %w", err))
 	}
-	postgres, err := db.DB()
+	postgres, dbErr := db.DB()
+	if dbErr != nil {
+		log.Fatal(xerrors.Errorf("failed to get postgres: %w", dbErr))
+	}
 	defer postgres.Close()
 
 	e := ui.Echo()

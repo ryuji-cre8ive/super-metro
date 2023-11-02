@@ -1,9 +1,11 @@
 package ui
 
 import (
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/ryuji-cre8ive/super-suica/internal/usecase"
+	"github.com/ryuji-cre8ive/super-metro/internal/usecase"
 )
 
 type Handler struct {
@@ -18,9 +20,10 @@ func New(u *usecase.Usecase) *Handler {
 
 func SetApi(e *echo.Echo, h *Handler) {
 	g := e.Group("/api/v1")
+	g.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 	g.GET("/healthcheck", HealthCheckHandler)
-	g.POST("/webhook", h.UserHandler.Create)
-
+	g.POST("/signup", h.UserHandler.Create)
+	g.POST("/login", h.UserHandler.Login)
 }
 
 func Echo() *echo.Echo {
