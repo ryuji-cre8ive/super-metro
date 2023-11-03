@@ -15,9 +15,7 @@ export default function SignupPage() {
       userName,
     };
 
-    console.log("params", params);
     axios.post("/signup", params).then((res: AxiosResponse) => {
-      console.log("res", res);
       alert("successfully created !!!");
       if (res.status === 200) {
         return router.push("/");

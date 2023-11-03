@@ -60,6 +60,8 @@ func (h *userHandler) Login(c echo.Context) error {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["email"] = email
+	claims["userName"] = user.Name
+	claims["id"] = user.ID
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
 	t, err := token.SignedString([]byte("your_secret_key"))
