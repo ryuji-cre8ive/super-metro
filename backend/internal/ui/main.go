@@ -24,6 +24,7 @@ func SetApi(e *echo.Echo, h *Handler) {
 	g.GET("/healthcheck", HealthCheckHandler)
 	g.POST("/signup", h.UserHandler.Create)
 	g.POST("/login", h.UserHandler.Login)
+	g.POST("/logout", h.UserHandler.Logout)
 }
 
 func Echo() *echo.Echo {
