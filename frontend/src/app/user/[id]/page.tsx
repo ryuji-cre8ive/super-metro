@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 import Map from "@/components/GoogleMap";
+import InputWithIcon, { InputLabel } from "@/components/InputWithIcon";
+import { Button } from "@mui/material";
+import RouteDetails from "@/components/RouteDetail";
 
 export default function Page({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -11,6 +14,9 @@ export default function Page({ params }: { params: { id: string } }) {
   const [destination, setDestination] = useState<string>("");
   const [originInput, setOriginInput] = useState<string>("");
   const [destinationInput, setDestinationInput] = useState<string>("");
+
+  const [directions, setDirections] =
+    useState<google.maps.DirectionsResult | null>(null);
 
   const handleChangeOrigin = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOriginInput(e.target.value);
@@ -24,17 +30,46 @@ export default function Page({ params }: { params: { id: string } }) {
     setOrigin(originInput);
     setDestination(destinationInput);
   };
+
+  const handleSetRoutes = (route: google.maps.DirectionsResult) => {
+    setDirections(route);
+  };
   return (
-    <div style={{ display: "flex" }}>
-      <section>
-        <Map origin={origin} destination={destination} />
+    <div>
+      <section
+        style={{
+          display: "flex",
+          textAlign: "center",
+          justifyContent: "center",
+        }}
+      >
+        <InputWithIcon
+          onChange={handleChangeOrigin}
+          label={InputLabel.DEPARTURE}
+        />
+        <InputWithIcon
+          onChange={handleChangeDestination}
+          label={InputLabel.DESTINATION}
+        />
+        <Button onClick={handleClickButton}>Search!!</Button>
       </section>
-      <section>
-        <input type="text" onChange={handleChangeOrigin} />
-        {origin}
-        <input type="text" onChange={handleChangeDestination} />
-        {destination}
-        <button onClick={handleClickButton}>Search</button>
+      <section style={{ display: "flex" }}>
+        <div style={{ flex: "7", margin: "10px" }}>
+          <Map
+            origin={origin}
+            destination={destination}
+            handleSetRoutes={handleSetRoutes}
+            directions={directions}
+          />
+        </div>
+
+        <section style={{ flex: "3", margin: "10px" }}>
+          <h1>Routes</h1>
+          {directions &&
+            directions.routes.map((route, index) => (
+              <RouteDetails route={route} key={index} />
+            ))}
+        </section>
       </section>
     </div>
   );
