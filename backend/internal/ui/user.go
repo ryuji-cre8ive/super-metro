@@ -16,6 +16,7 @@ type (
 		Create(c echo.Context) error
 		Login(c echo.Context) error
 		Logout(c echo.Context) error
+		TopUp(c echo.Context) error
 	}
 
 	userHandler struct {
@@ -63,6 +64,7 @@ func (h *userHandler) Login(c echo.Context) error {
 	claims["userName"] = user.Name
 	claims["id"] = user.ID
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	claims["valance"] = user.Valance
 
 	t, err := token.SignedString([]byte("your_secret_key"))
 	if err != nil {
@@ -89,4 +91,33 @@ func (h *userHandler) Logout(c echo.Context) error {
 	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
 
 	return c.String(200, "success")
+}
+
+func (h *userHandler) TopUp(c echo.Context) error {
+	param := new(domain.User)
+	if err := c.Bind(param); err != nil {
+		return xerrors.Errorf("failed to bind User: %w", err)
+	}
+	id := param.ID
+	amount := param.Valance
+
+	user, topUpErr := h.UserUsecase.TopUp(c, id, amount)
+	if topUpErr != nil {
+		return xerrors.Errorf("failed to top up: %w", topUpErr)
+	}
+
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["email"] = user.Email
+	claims["userName"] = user.Name
+	claims["id"] = user.ID
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	claims["valance"] = user.Valance
+
+	t, err := token.SignedString([]byte("your_secret_key"))
+	if err != nil {
+		return xerrors.Errorf("failed to create JWT: %w", err)
+	}
+	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
+	return c.JSON(200, map[string]interface{}{"sessionToken": t})
 }

@@ -12,6 +12,7 @@ type (
 	UserUsecase interface {
 		Create(ctx echo.Context, email string, userName string, password string) error
 		FindByEmail(ctx echo.Context, email string) (*domain.User, error)
+		TopUp(ctx echo.Context, id string, amount int) (*domain.User, error)
 	}
 
 	userUsecase struct {
@@ -31,6 +32,14 @@ func (u *userUsecase) FindByEmail(ctx echo.Context, email string) (*domain.User,
 	user, loginErr := u.stores.User.FindByEmail(email)
 	if loginErr != nil {
 		return nil, xerrors.Errorf("failed to login: %w", loginErr)
+	}
+	return user, nil
+}
+
+func (u *userUsecase) TopUp(ctx echo.Context, id string, amount int) (*domain.User, error) {
+	user, err := u.stores.User.TopUp(id, amount)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to top up: %w", err)
 	}
 	return user, nil
 }

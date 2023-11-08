@@ -25,6 +25,7 @@ func SetApi(e *echo.Echo, h *Handler) {
 	g.POST("/signup", h.UserHandler.Create)
 	g.POST("/login", h.UserHandler.Login)
 	g.POST("/logout", h.UserHandler.Logout)
+	g.POST("/top-up", h.UserHandler.TopUp)
 }
 
 func Echo() *echo.Echo {
