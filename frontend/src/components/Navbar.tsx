@@ -44,7 +44,7 @@ export default function ButtonAppBar() {
       },
       {
         label: "logout",
-        link: `/user/${user.id}/logout`,
+        link: `/user/${user.id}/signout`,
       },
     ];
   }
