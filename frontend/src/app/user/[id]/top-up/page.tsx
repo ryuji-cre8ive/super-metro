@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SendIcon from "@mui/icons-material/Send";
 import Image from "next/image";
 import CustomSnackBar, { Severity } from "@/components/SnackBar";
 import EWalletPic from "../../../../../public/e-wallet.png";
@@ -14,6 +16,7 @@ const TopUp = () => {
   const [amount, setAmount] = useState("");
   const [errOpen, setErrOpen] = useState<boolean>(false);
   const [successOpen, setSuccessOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleTopUp = () => {
     // Here you can add the logic to top up the user's account
@@ -23,14 +26,16 @@ const TopUp = () => {
       setErrOpen(true);
     }
     if (!user) return;
+    setLoading(true);
     axios
       .post("/top-up", { valance: Number(amount), id: user.id })
       .then((res: AxiosResponse) => {
         if (res.status !== 200) return;
         topUp(user, Number(amount));
-        localStorage.setItem("session_token", res.data.sessionToken);
+        window.localStorage.setItem("session_token", res.data.sessionToken);
         setSuccessOpen(true);
         setAmount("");
+        setLoading(false);
       });
   };
 
@@ -53,7 +58,17 @@ const TopUp = () => {
         onChange={(e) => setAmount(e.target.value)}
         error={Number(amount) ? false : !amount ? false : true}
       />
-      <Button onClick={handleTopUp}>Top Up</Button>
+      <LoadingButton
+        color="primary"
+        onClick={handleTopUp}
+        loading={loading}
+        loadingPosition="start"
+        endIcon={<SendIcon />}
+        variant="contained"
+        disabled={(Number(amount) ? false : !amount ? false : true) || loading}
+      >
+        <span>TopUp!!</span>
+      </LoadingButton>
       <CustomSnackBar
         open={errOpen}
         setOpen={setErrOpen}
