@@ -21,6 +21,7 @@ export default function Home() {
         userName: res.data.userName,
         email: res.data.email,
         password: res.data.password,
+        valance: res.data.valance,
         sessionToken: res.data.sessionToken,
       };
 
@@ -33,7 +34,6 @@ export default function Home() {
     <main>
       <h2>This is a login form </h2>
       <LoginForm onSubmit={onSubmit} />
-      <Link href={"/signup"}>still not have account??</Link>
     </main>
   );
 }

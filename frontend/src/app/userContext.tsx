@@ -13,12 +13,14 @@ const AuthContext = createContext({
   user: {} as User | null | undefined,
   login: (user: User) => {},
   logout: () => {},
+  topUp: (user: User, amount: number) => {},
 });
 
 // AuthProviderコンポーネントを作成
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const token = localStorage.getItem("session_token");
+
   useEffect(() => {
-    const token = localStorage.getItem("session_token");
     if (!token) {
       return logout();
     }
@@ -31,11 +33,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password: "",
       email: decodedToken.email,
       userName: decodedToken.userName,
+      valance: decodedToken.valance,
       sessionToken: "",
     };
 
     setUser(userInfo);
-  }, []);
+  }, [token]);
   const [user, setUser] = useState<User | null>();
 
   const login = (user: User) => {
@@ -46,8 +49,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const topUp = (user: User, amount: number) => {
+    setUser({ ...user, valance: user.valance + amount });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, topUp }}>
       {children}
     </AuthContext.Provider>
   );

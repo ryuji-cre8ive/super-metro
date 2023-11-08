@@ -1,18 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import CustomSnackBar, { Severity } from "@/components/SnackBar";
 import EWalletPic from "../../../../../public/e-wallet.png";
 import { SnackBarTextErr, SnackBarTextSuccess } from "./text";
 import { useAuth } from "@/app/userContext";
+import axios from "@/api/axiosConfig";
+import { AxiosResponse } from "axios";
 
 const TopUp = () => {
+  const { user, topUp } = useAuth();
   const [amount, setAmount] = useState("");
   const [errOpen, setErrOpen] = useState<boolean>(false);
   const [successOpen, setSuccessOpen] = useState<boolean>(false);
-  const { user } = useAuth();
-  console.log(user);
 
   const handleTopUp = () => {
     // Here you can add the logic to top up the user's account
@@ -21,8 +22,16 @@ const TopUp = () => {
     if (!Number(amount)) {
       setErrOpen(true);
     }
-    console.log(`Top up with amount: ${amount}`);
-    setSuccessOpen(true);
+    if (!user) return;
+    axios
+      .post("/top-up", { valance: Number(amount), id: user.id })
+      .then((res: AxiosResponse) => {
+        if (res.status !== 200) return;
+        topUp(user, Number(amount));
+        localStorage.setItem("session_token", res.data.sessionToken);
+        setSuccessOpen(true);
+        setAmount("");
+      });
   };
 
   return (
@@ -37,7 +46,7 @@ const TopUp = () => {
     >
       <Typography>This is Top up page</Typography>
       <Image src={EWalletPic} alt="e-wallets" loading="lazy" width={300} />
-      <Typography>Valance: 30</Typography>
+      <Typography>Valance: {user && user.valance}</Typography>
       <TextField
         label="Amount"
         value={amount}
