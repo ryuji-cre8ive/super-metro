@@ -43,9 +43,6 @@ function DirectionsDisplay({
       if (!destination.includes("station")) {
         destination = destination + " station";
       }
-      console.log("origin", origin);
-      console.log("dest", destination);
-      console.log("origingin");
 
       const directionsService = new google.maps.DirectionsService();
 
@@ -58,7 +55,6 @@ function DirectionsDisplay({
         (result, status) => {
           if (status === google.maps.DirectionsStatus.OK && result) {
             handleSetRoutes(result);
-            console.log(result);
           } else {
             alert("something error occurred, please check your query");
             console.error(`Directions request failed due to ${status}`);
