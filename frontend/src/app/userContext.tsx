@@ -18,9 +18,8 @@ const AuthContext = createContext({
 
 // AuthProviderコンポーネントを作成
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const token = localStorage.getItem("session_token");
-
   useEffect(() => {
+    const token = window.localStorage.getItem("session_token");
     if (!token) {
       return logout();
     }
@@ -38,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     setUser(userInfo);
-  }, [token]);
+  }, []);
   const [user, setUser] = useState<User | null>();
 
   const login = (user: User) => {

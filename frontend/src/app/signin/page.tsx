@@ -15,7 +15,7 @@ export default function Home() {
   const onSubmit = async (email: string, password: string) => {
     const res: AxiosResponse = await axios.post("/login", { email, password });
     if (res.status === 200) {
-      localStorage.setItem("session_token", res.data.sessionToken);
+      window.localStorage.setItem("session_token", res.data.sessionToken);
       const userInfo: User = {
         id: res.data.id,
         userName: res.data.userName,
