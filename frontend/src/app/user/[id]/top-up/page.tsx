@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { TextField, Typography } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/Send";
@@ -13,30 +13,47 @@ import { AxiosResponse } from "axios";
 
 const TopUp = () => {
   const { user, topUp } = useAuth();
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState<number | null>(null);
   const [errOpen, setErrOpen] = useState<boolean>(false);
   const [successOpen, setSuccessOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleTopUp = () => {
-    // Here you can add the logic to top up the user's account
+  const isNumber = (value: any) => {
+    var pattern = /^[0-9]*$/;
+    return pattern.test(value);
+  };
 
+  const handleAmount = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!isNumber(e.target.value)) {
+      return setErrOpen(true);
+    }
+    setErrOpen(false);
+    setAmount(Number(e.target.value));
+  };
+
+  const handleTopUp = () => {
     if (!amount) return;
-    if (!Number(amount)) {
-      setErrOpen(true);
+    if (!isNumber(amount)) {
+      return setErrOpen(true);
     }
     if (!user) return;
     setLoading(true);
-    axios
-      .post("/top-up", { valance: Number(amount), id: user.id })
-      .then((res: AxiosResponse) => {
-        if (res.status !== 200) return;
-        topUp(user, Number(amount));
-        window.localStorage.setItem("session_token", res.data.sessionToken);
-        setSuccessOpen(true);
-        setAmount("");
-        setLoading(false);
-      });
+    try {
+      axios
+        .post("/top-up", { valance: Number(amount), id: user.id })
+        .then((res: AxiosResponse) => {
+          if (res.status !== 200) return;
+          topUp(user, Number(amount));
+          window.localStorage.setItem("session_token", res.data.sessionToken);
+          setSuccessOpen(true);
+          setAmount(null);
+          setLoading(false);
+        });
+    } catch (e) {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,23 +66,18 @@ const TopUp = () => {
         alignItems: "center",
       }}
     >
-      <Typography>This is Top up page</Typography>
       <Image src={EWalletPic} alt="e-wallets" loading="lazy" width={300} />
-      <Typography>Valance: {user && user.valance}</Typography>
-      <TextField
-        label="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        error={Number(amount) ? false : !amount ? false : true}
-      />
+      <Typography variant="subtitle1">
+        Valance: {user && user.valance}
+      </Typography>
+      <TextField label="Amount" onChange={handleAmount} />
       <LoadingButton
         color="primary"
         onClick={handleTopUp}
         loading={loading}
-        loadingPosition="start"
+        loadingPosition="center"
         endIcon={<SendIcon />}
         variant="contained"
-        disabled={(Number(amount) ? false : !amount ? false : true) || loading}
       >
         <span>TopUp!!</span>
       </LoadingButton>
