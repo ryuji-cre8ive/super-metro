@@ -35,15 +35,15 @@ export default function ButtonAppBar() {
   if (user) {
     settings = [
       {
-        label: "top up",
+        label: "TOP UP",
         link: `/user/${user.id}/top-up`,
       },
       {
-        label: "main page",
+        label: "MAIN PAGE",
         link: `/user/${user.id}`,
       },
       {
-        label: "logout",
+        label: "LOG OUT",
         link: `/user/${user.id}/signout`,
       },
     ];
@@ -108,9 +108,6 @@ export default function ButtonAppBar() {
                   </Menu>
                 </Box>
               </Typography>
-              <Button color="inherit" href={"/user/" + user.id + "/signout"}>
-                Logout
-              </Button>
             </>
           ) : (
             <Button color="inherit" href="/signin">
