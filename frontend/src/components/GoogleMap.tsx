@@ -6,8 +6,6 @@ import {
   Libraries,
 } from "@react-google-maps/api";
 
-import RouteDetails from "./RouteDetail";
-
 const mapContainerStyle = {
   width: "100%",
   height: "600px",
@@ -71,8 +69,8 @@ function DirectionsDisplay({
     });
   }, [origin, destination, isLoaded]);
 
-  if (loadError) return <div>Google Mapsの読み込みに失敗しました。</div>;
-  if (!isLoaded) return <div>Google Mapsを読み込んでいます...</div>;
+  if (loadError) return <div>Failed to load Google Maps.</div>;
+  if (!isLoaded) return <div>Loading Google Maps...</div>;
 
   return (
     <div {...props}>
