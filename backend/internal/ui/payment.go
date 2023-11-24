@@ -1,12 +1,18 @@
-import ()
+package ui
+import (
 
+	"github.com/labstack/echo/v4"
+	"github.com/ryuji-cre8ive/super-metro/internal/domain"
+	"github.com/ryuji-cre8ive/super-metro/internal/usecase"
+	"golang.org/x/xerrors"
+)
 
 type (
 	PaymentHandler interface {
 		Add(c echo.Context) error
 	}
 
-	userHandler struct {
+	paymentHandler struct {
 		usecase.PaymentUsecase
 	}
 )
@@ -32,7 +38,7 @@ func (h *paymentHandler) Add(c echo.Context) error {
 	if len(expiryDate) != 4 {
 		return xerrors.Errorf("expiryDate is invalid")
 	}
-	
+
 	cvv := param.CVV
 	if cvv == "" {
 		return xerrors.Errorf("cvv is empty")
@@ -41,7 +47,7 @@ func (h *paymentHandler) Add(c echo.Context) error {
 		return xerrors.Errorf("cvv is invalid")
 	}
 
-	userId := param.UserId
+	userId := param.UserID
 	paymentErr := h.PaymentUsecase.Add(c, userId, cardNumber, expiryDate, cvv)
 	if paymentErr != nil {
 		return xerrors.Errorf("failed to post Payment: %w", paymentErr)
