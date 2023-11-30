@@ -29,7 +29,8 @@ func SetApi(e *echo.Echo, h *Handler) {
 	g.POST("/logout", h.UserHandler.Logout)
 	g.POST("/top-up", h.UserHandler.TopUp)
 
-	g.POST("/add-creditcard", h.PaymentHandler.Add)
+	g.GET("/credit-card/:userID", h.PaymentHandler.GetCreditCard)
+	g.POST("/credit-card/add", h.PaymentHandler.Add)
 }
 
 func Echo() *echo.Echo {
