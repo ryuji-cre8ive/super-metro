@@ -3,12 +3,17 @@ package stores
 import (
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/ryuji-cre8ive/super-metro/internal/domain"
 	"gorm.io/gorm"
 )
+
 type (
 	PaymentStore interface {
 		Add(userId string, cardNumber string, expiryDate string, cvv string) error
+		Delete(userId string) error
+		GetCreditCard(userId string) (*domain.Payment, error)
 	}
 
 	paymentStore struct {
@@ -16,13 +21,24 @@ type (
 	}
 )
 
-func(s *paymentStore) Add(userId string, cardNumber string, expiryDate string, cvv string) error {
+func (s *paymentStore) Add(userId string, cardNumber string, expiryDate string, cvv string) error {
 	return s.DB.Create(&domain.Payment{
-		UserID: userId,
+		ID:         uuid.Must(uuid.NewRandom()).String(),
+		UserID:     userId,
 		CardNumber: cardNumber,
 		ExpiryDate: expiryDate,
-		CVV: cvv,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CVV:        cvv,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}).Error
+}
+
+func (s *paymentStore) Delete(userId string) error {
+	return s.DB.Model(&domain.Payment{}).Where("user_id = ?", userId).Update("DeletedAt", time.Now()).Error
+}
+
+func (s *paymentStore) GetCreditCard(userId string) (*domain.Payment, error) {
+	var payment *domain.Payment
+	result := s.DB.Where("user_id = ? AND deleted_at IS NULL", userId).Find(&payment)
+	return payment, result.Error
 }

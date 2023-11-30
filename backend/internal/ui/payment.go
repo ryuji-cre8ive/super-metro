@@ -1,6 +1,6 @@
 package ui
-import (
 
+import (
 	"github.com/labstack/echo/v4"
 	"github.com/ryuji-cre8ive/super-metro/internal/domain"
 	"github.com/ryuji-cre8ive/super-metro/internal/usecase"
@@ -10,6 +10,7 @@ import (
 type (
 	PaymentHandler interface {
 		Add(c echo.Context) error
+		GetCreditCard(c echo.Context) error
 	}
 
 	paymentHandler struct {
@@ -48,10 +49,27 @@ func (h *paymentHandler) Add(c echo.Context) error {
 	}
 
 	userId := param.UserID
+	payment, paymentGetErr := h.PaymentUsecase.GetCreditCard(c, userId)
+	if paymentGetErr != nil {
+		return xerrors.Errorf("failed to get Payment: %w", paymentGetErr)
+	}
+	if payment != nil {
+		h.PaymentUsecase.Delete(c, userId)
+	}
 	paymentErr := h.PaymentUsecase.Add(c, userId, cardNumber, expiryDate, cvv)
 	if paymentErr != nil {
 		return xerrors.Errorf("failed to post Payment: %w", paymentErr)
 	}
 
 	return c.String(200, "success")
+}
+
+func (h *paymentHandler) GetCreditCard(c echo.Context) error {
+	userId := c.Param("userID")
+	payment, paymentErr := h.PaymentUsecase.GetCreditCard(c, userId)
+	if paymentErr != nil {
+		return xerrors.Errorf("failed to get Payment: %w", paymentErr)
+	}
+
+	return c.JSON(200, payment)
 }
