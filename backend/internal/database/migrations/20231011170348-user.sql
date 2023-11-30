@@ -12,7 +12,7 @@ CREATE TABLE "users" (
     deleted_at timestamp
 );
 
-CREATE TABLE payment (
+CREATE TABLE payments (
     id text PRIMARY KEY,
     user_id text,
     card_number text,
