@@ -33,6 +33,9 @@ const TopUp = () => {
 
   const getCardNumber = async (userId: string) => {
     axios.get(`/credit-card/${userId}`).then((res) => {
+      if (!res.data) {
+        return;
+      }
       res.data.CardNumber && setCardNumber(res.data.CardNumber);
     });
   };
