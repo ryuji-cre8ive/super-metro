@@ -24,4 +24,4 @@ CREATE TABLE payments (
 );
 -- +migrate Down
 DROP TABLE "users";
-DROP TABLE "payment";
+DROP TABLE "payments";
