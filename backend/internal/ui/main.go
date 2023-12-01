@@ -11,12 +11,14 @@ import (
 type Handler struct {
 	UserHandler
 	PaymentHandler
+	TransactionHandler
 }
 
 func New(u *usecase.Usecase) *Handler {
 	return &Handler{
-		UserHandler: &userHandler{u.User},
-		PaymentHandler: &paymentHandler{u.Payment},
+		UserHandler:        &userHandler{u.User, u.Payment, u.Transaction},
+		PaymentHandler:     &paymentHandler{u.Payment},
+		TransactionHandler: &transactionHandler{u.Transaction},
 	}
 }
 
@@ -29,8 +31,10 @@ func SetApi(e *echo.Echo, h *Handler) {
 	g.POST("/logout", h.UserHandler.Logout)
 	g.POST("/top-up", h.UserHandler.TopUp)
 
-	g.GET("/credit-card/:userID", h.PaymentHandler.GetCreditCard)
+	g.GET("/credit-card/:userID", h.PaymentHandler.Get)
 	g.POST("/credit-card/add", h.PaymentHandler.Add)
+
+	g.GET("/transaction/:userID", h.TransactionHandler.Get)
 }
 
 func Echo() *echo.Echo {

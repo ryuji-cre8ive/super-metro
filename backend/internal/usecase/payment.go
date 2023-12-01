@@ -10,7 +10,7 @@ type (
 	PaymentUsecase interface {
 		Add(c echo.Context, userId string, cardNumber string, expiryDate string, cvv string) error
 		Delete(c echo.Context, userId string) error
-		GetCreditCard(c echo.Context, userId string) (*domain.Payment, error)
+		Get(c echo.Context, userId string) (*domain.Payment, error)
 	}
 
 	paymentUsecase struct {
@@ -26,6 +26,6 @@ func (u *paymentUsecase) Delete(c echo.Context, userId string) error {
 	return u.stores.Payment.Delete(userId)
 }
 
-func (u *paymentUsecase) GetCreditCard(c echo.Context, userId string) (*domain.Payment, error) {
-	return u.stores.Payment.GetCreditCard(userId)
+func (u *paymentUsecase) Get(c echo.Context, userId string) (*domain.Payment, error) {
+	return u.stores.Payment.Get(userId)
 }

@@ -15,7 +15,7 @@ type (
 	PaymentStore interface {
 		Add(userId string, cardNumber string, expiryDate string, cvv string) error
 		Delete(userId string) error
-		GetCreditCard(userId string) (*domain.Payment, error)
+		Get(userId string) (*domain.Payment, error)
 	}
 
 	paymentStore struct {
@@ -56,7 +56,7 @@ func (s *paymentStore) Delete(userId string) error {
 	return s.DB.Model(&domain.Payment{}).Where("user_id = ?", userId).Update("DeletedAt", time.Now()).Error
 }
 
-func (s *paymentStore) GetCreditCard(userId string) (*domain.Payment, error) {
+func (s *paymentStore) Get(userId string) (*domain.Payment, error) {
 	var payment *domain.Payment
 	result := s.DB.Where("user_id = ? AND deleted_at IS NULL", userId).Find(&payment)
 	fmt.Println("result", payment)

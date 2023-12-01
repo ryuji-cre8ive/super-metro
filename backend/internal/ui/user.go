@@ -21,6 +21,8 @@ type (
 
 	userHandler struct {
 		usecase.UserUsecase
+		usecase.PaymentUsecase
+		usecase.TransactionUsecase
 	}
 )
 
@@ -94,6 +96,7 @@ func (h *userHandler) Logout(c echo.Context) error {
 }
 
 func (h *userHandler) TopUp(c echo.Context) error {
+	const TOP_UP_TRANSACTION_TYPE = "TOPUP"
 	param := new(domain.User)
 	if err := c.Bind(param); err != nil {
 		return xerrors.Errorf("failed to bind User: %w", err)
@@ -104,6 +107,14 @@ func (h *userHandler) TopUp(c echo.Context) error {
 	user, topUpErr := h.UserUsecase.TopUp(c, id, amount)
 	if topUpErr != nil {
 		return xerrors.Errorf("failed to top up: %w", topUpErr)
+	}
+	userPaymentInfo, paymentErr := h.PaymentUsecase.Get(c, id)
+	if paymentErr != nil {
+		return xerrors.Errorf("failed to get Payment: %w", paymentErr)
+	}
+	transactionErr := h.TransactionUsecase.Add(c, id, userPaymentInfo.ID, TOP_UP_TRANSACTION_TYPE, amount)
+	if transactionErr != nil {
+		return xerrors.Errorf("failed to post Transaction: %w", transactionErr)
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)
