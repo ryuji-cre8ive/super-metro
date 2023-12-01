@@ -144,6 +144,7 @@ const TopUp = () => {
         loadingPosition="center"
         endIcon={<SendIcon />}
         variant="contained"
+        disabled={!amount || !cardNumber}
       >
         <span>TopUp!!</span>
       </LoadingButton>
