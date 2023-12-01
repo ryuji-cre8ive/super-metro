@@ -43,6 +43,10 @@ export default function ButtonAppBar() {
         link: `/user/${user.id}`,
       },
       {
+        label: "HISTORY",
+        link: `/user/${user.id}/history`,
+      },
+      {
         label: "LOG OUT",
         link: `/user/${user.id}/signout`,
       },
