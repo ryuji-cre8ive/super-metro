@@ -27,9 +27,9 @@ func (s *paymentStore) Add(userId string, cardNumber string, expiryDate string, 
 	return s.DB.Create(&domain.Payment{
 		ID:         uuid.Must(uuid.NewRandom()).String(),
 		UserID:     userId,
-		CardNumber: string(encryptedCardNumber),
-		ExpiryDate: string(encryptedExpiryDate),
-		CVV:        string(encryptedCVV),
+		CardNumber: cardNumber,
+		ExpiryDate: expiryDate,
+		CVV:        cvv,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}).Error
