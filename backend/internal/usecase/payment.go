@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/ryuji-cre8ive/super-metro/internal/domain"
 	"github.com/ryuji-cre8ive/super-metro/internal/stores"
+	"github.com/ryuji-cre8ive/super-metro/internal/utils"
 )
 
 type (
@@ -14,28 +15,29 @@ type (
 	}
 
 	paymentUsecase struct {
-		stores *stores.Stores
+		stores  *stores.Stores
+		encrypt utils.EncryptType
 	}
 )
 
 func (u *paymentUsecase) Add(c echo.Context, userId string, cardNumber string, expiryDate string, cvv string) error {
 	key := []byte(userId)[:32] // 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256
 
-	encryptedCardNumber, err := utils.Encrypt([]byte(cardNumber), key)
+	encryptedCardNumber, err := u.encrypt.Encrypt([]byte(cardNumber), key)
 	if err != nil {
 		return err
 	}
 
-	encryptedExpiryDate, err := utils.Encrypt([]byte(expiryDate), key)
+	encryptedExpiryDate, err := u.encrypt.Encrypt([]byte(expiryDate), key)
 	if err != nil {
 		return err
 	}
 
-	encryptedCVV, err := utils.Encrypt([]byte(cvv), key)
+	encryptedCVV, err := u.encrypt.Encrypt([]byte(cvv), key)
 	if err != nil {
 		return err
 	}
-	return u.stores.Payment.Add(userId, String(encryptedCardNumber), String(encryptedExpiryDate), String(encryptedCVV))
+	return u.stores.Payment.Add(userId, string(encryptedCardNumber), string(encryptedExpiryDate), string(encryptedCVV))
 }
 
 func (u *paymentUsecase) Delete(c echo.Context, userId string) error {
