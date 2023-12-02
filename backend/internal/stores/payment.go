@@ -24,23 +24,6 @@ type (
 )
 
 func (s *paymentStore) Add(userId string, cardNumber string, expiryDate string, cvv string) error {
-	key := []byte(userId)[:32] // 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256
-
-	encryptedCardNumber, err := utils.Encrypt([]byte(cardNumber), key)
-	if err != nil {
-		return err
-	}
-
-	encryptedExpiryDate, err := utils.Encrypt([]byte(expiryDate), key)
-	if err != nil {
-		return err
-	}
-
-	encryptedCVV, err := utils.Encrypt([]byte(cvv), key)
-	if err != nil {
-		return err
-	}
-
 	return s.DB.Create(&domain.Payment{
 		ID:         uuid.Must(uuid.NewRandom()).String(),
 		UserID:     userId,

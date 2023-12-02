@@ -19,7 +19,23 @@ type (
 )
 
 func (u *paymentUsecase) Add(c echo.Context, userId string, cardNumber string, expiryDate string, cvv string) error {
-	return u.stores.Payment.Add(userId, cardNumber, expiryDate, cvv)
+	key := []byte(userId)[:32] // 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256
+
+	encryptedCardNumber, err := utils.Encrypt([]byte(cardNumber), key)
+	if err != nil {
+		return err
+	}
+
+	encryptedExpiryDate, err := utils.Encrypt([]byte(expiryDate), key)
+	if err != nil {
+		return err
+	}
+
+	encryptedCVV, err := utils.Encrypt([]byte(cvv), key)
+	if err != nil {
+		return err
+	}
+	return u.stores.Payment.Add(userId, String(encryptedCardNumber), String(encryptedExpiryDate), String(encryptedCVV))
 }
 
 func (u *paymentUsecase) Delete(c echo.Context, userId string) error {
