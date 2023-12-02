@@ -25,25 +25,16 @@ func (h *paymentHandler) Add(c echo.Context) error {
 	}
 
 	cardNumber := param.CardNumber
-	if cardNumber == "" {
-		return xerrors.Errorf("cardNumber is empty")
-	}
 	if len(cardNumber) != 16 {
 		return xerrors.Errorf("cardNumber is invalid")
 	}
 
 	expiryDate := param.ExpiryDate
-	if expiryDate == "" {
-		return xerrors.Errorf("expiryDate is empty")
-	}
 	if len(expiryDate) != 4 {
 		return xerrors.Errorf("expiryDate is invalid")
 	}
 
 	cvv := param.CVV
-	if cvv == "" {
-		return xerrors.Errorf("cvv is empty")
-	}
 	if len(cvv) != 3 {
 		return xerrors.Errorf("cvv is invalid")
 	}
