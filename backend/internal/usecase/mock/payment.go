@@ -11,7 +11,7 @@ package mock_usecase
 import (
 	reflect "reflect"
 
-	v4 "github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v4"
 	domain "github.com/ryuji-cre8ive/super-metro/internal/domain"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -40,7 +40,7 @@ func (m *MockPaymentUsecase) EXPECT() *MockPaymentUsecaseMockRecorder {
 }
 
 // Add mocks base method.
-func (m *MockPaymentUsecase) Add(c v4.Context, userId, cardNumber, expiryDate, cvv string) error {
+func (m *MockPaymentUsecase) Add(c echo.Context, userId, cardNumber, expiryDate, cvv string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", c, userId, cardNumber, expiryDate, cvv)
 	ret0, _ := ret[0].(error)
@@ -54,7 +54,7 @@ func (mr *MockPaymentUsecaseMockRecorder) Add(c, userId, cardNumber, expiryDate,
 }
 
 // Delete mocks base method.
-func (m *MockPaymentUsecase) Delete(c v4.Context, userId string) error {
+func (m *MockPaymentUsecase) Delete(c echo.Context, userId string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", c, userId)
 	ret0, _ := ret[0].(error)
@@ -68,7 +68,7 @@ func (mr *MockPaymentUsecaseMockRecorder) Delete(c, userId any) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockPaymentUsecase) Get(c v4.Context, userId string) (*domain.Payment, error) {
+func (m *MockPaymentUsecase) Get(c echo.Context, userId string) (*domain.Payment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", c, userId)
 	ret0, _ := ret[0].(*domain.Payment)
