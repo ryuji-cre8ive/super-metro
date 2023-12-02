@@ -14,31 +14,31 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockEncrypt is a mock of Encrypt interface.
-type MockEncrypt struct {
+// MockEncryptType is a mock of EncryptType interface.
+type MockEncryptType struct {
 	ctrl     *gomock.Controller
-	recorder *MockEncryptMockRecorder
+	recorder *MockEncryptTypeMockRecorder
 }
 
-// MockEncryptMockRecorder is the mock recorder for MockEncrypt.
-type MockEncryptMockRecorder struct {
-	mock *MockEncrypt
+// MockEncryptTypeMockRecorder is the mock recorder for MockEncryptType.
+type MockEncryptTypeMockRecorder struct {
+	mock *MockEncryptType
 }
 
-// NewMockEncrypt creates a new mock instance.
-func NewMockEncrypt(ctrl *gomock.Controller) *MockEncrypt {
-	mock := &MockEncrypt{ctrl: ctrl}
-	mock.recorder = &MockEncryptMockRecorder{mock}
+// NewMockEncryptType creates a new mock instance.
+func NewMockEncryptType(ctrl *gomock.Controller) *MockEncryptType {
+	mock := &MockEncryptType{ctrl: ctrl}
+	mock.recorder = &MockEncryptTypeMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockEncrypt) EXPECT() *MockEncryptMockRecorder {
+func (m *MockEncryptType) EXPECT() *MockEncryptTypeMockRecorder {
 	return m.recorder
 }
 
 // CheckHashPassword mocks base method.
-func (m *MockEncrypt) CheckHashPassword(hashPassword, password string) error {
+func (m *MockEncryptType) CheckHashPassword(hashPassword, password string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CheckHashPassword", hashPassword, password)
 	ret0, _ := ret[0].(error)
@@ -46,13 +46,13 @@ func (m *MockEncrypt) CheckHashPassword(hashPassword, password string) error {
 }
 
 // CheckHashPassword indicates an expected call of CheckHashPassword.
-func (mr *MockEncryptMockRecorder) CheckHashPassword(hashPassword, password any) *gomock.Call {
+func (mr *MockEncryptTypeMockRecorder) CheckHashPassword(hashPassword, password any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckHashPassword", reflect.TypeOf((*MockEncrypt)(nil).CheckHashPassword), hashPassword, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckHashPassword", reflect.TypeOf((*MockEncryptType)(nil).CheckHashPassword), hashPassword, password)
 }
 
 // Decrypt mocks base method.
-func (m *MockEncrypt) Decrypt(encryptedData string, key []byte) ([]byte, error) {
+func (m *MockEncryptType) Decrypt(encryptedData string, key []byte) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Decrypt", encryptedData, key)
 	ret0, _ := ret[0].([]byte)
@@ -61,13 +61,13 @@ func (m *MockEncrypt) Decrypt(encryptedData string, key []byte) ([]byte, error) 
 }
 
 // Decrypt indicates an expected call of Decrypt.
-func (mr *MockEncryptMockRecorder) Decrypt(encryptedData, key any) *gomock.Call {
+func (mr *MockEncryptTypeMockRecorder) Decrypt(encryptedData, key any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decrypt", reflect.TypeOf((*MockEncrypt)(nil).Decrypt), encryptedData, key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decrypt", reflect.TypeOf((*MockEncryptType)(nil).Decrypt), encryptedData, key)
 }
 
 // Encrypt mocks base method.
-func (m *MockEncrypt) Encrypt(plainText, key []byte) (string, error) {
+func (m *MockEncryptType) Encrypt(plainText, key []byte) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Encrypt", plainText, key)
 	ret0, _ := ret[0].(string)
@@ -76,22 +76,22 @@ func (m *MockEncrypt) Encrypt(plainText, key []byte) (string, error) {
 }
 
 // Encrypt indicates an expected call of Encrypt.
-func (mr *MockEncryptMockRecorder) Encrypt(plainText, key any) *gomock.Call {
+func (mr *MockEncryptTypeMockRecorder) Encrypt(plainText, key any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encrypt", reflect.TypeOf((*MockEncrypt)(nil).Encrypt), plainText, key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encrypt", reflect.TypeOf((*MockEncryptType)(nil).Encrypt), plainText, key)
 }
 
-// PasswordEncryptPasswordEncrypt mocks base method.
-func (m *MockEncrypt) PasswordEncryptPasswordEncrypt(password string) (string, error) {
+// PasswordEncrypt mocks base method.
+func (m *MockEncryptType) PasswordEncrypt(password string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PasswordEncryptPasswordEncrypt", password)
+	ret := m.ctrl.Call(m, "PasswordEncrypt", password)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// PasswordEncryptPasswordEncrypt indicates an expected call of PasswordEncryptPasswordEncrypt.
-func (mr *MockEncryptMockRecorder) PasswordEncryptPasswordEncrypt(password any) *gomock.Call {
+// PasswordEncrypt indicates an expected call of PasswordEncrypt.
+func (mr *MockEncryptTypeMockRecorder) PasswordEncrypt(password any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PasswordEncryptPasswordEncrypt", reflect.TypeOf((*MockEncrypt)(nil).PasswordEncryptPasswordEncrypt), password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PasswordEncrypt", reflect.TypeOf((*MockEncryptType)(nil).PasswordEncrypt), password)
 }

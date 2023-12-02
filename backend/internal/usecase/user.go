@@ -16,12 +16,13 @@ type (
 	}
 
 	userUsecase struct {
-		stores *stores.Stores
+		stores  *stores.Stores
+		encrypt utils.EncryptType
 	}
 )
 
 func (u *userUsecase) Create(ctx echo.Context, email string, userName string, password string) error {
-	encryptedPassword, err := utils.PasswordEncrypt(password)
+	encryptedPassword, err := u.encrypt.PasswordEncrypt(password)
 	if err != nil {
 		return xerrors.Errorf("failed to encrypt password: %w", err)
 	}
