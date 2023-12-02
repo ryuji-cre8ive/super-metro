@@ -28,7 +28,7 @@ func TestPaymentUsecase_Add(t *testing.T) {
 	tests := map[string]struct {
 		input    input
 		want     error
-		mockFunc func(m *mock.MockPaymentStore, u *utilMock.MockEncrypt)
+		mockFunc func(m *mock.MockPaymentStore, u *utilMock.MockEncryptType)
 	}{
 		"success": {
 			input: input{
@@ -39,7 +39,7 @@ func TestPaymentUsecase_Add(t *testing.T) {
 				cvv:        "123",
 			},
 			want: nil,
-			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncrypt) {
+			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncryptType) {
 				u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", nil).Times(3)
 				m.EXPECT().Add(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 			},
@@ -53,7 +53,7 @@ func TestPaymentUsecase_Add(t *testing.T) {
 				cvv:        "123",
 			},
 			want: wantedError,
-			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncrypt) {
+			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncryptType) {
 				u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", nil).Times(3)
 				m.EXPECT().Add(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(wantedError)
 			},
@@ -67,7 +67,7 @@ func TestPaymentUsecase_Add(t *testing.T) {
 				cvv:        "123",
 			},
 			want: wantedError,
-			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncrypt) {
+			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncryptType) {
 				u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", wantedError).Times(1)
 				m.EXPECT().Add(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(0)
 			},
@@ -81,7 +81,7 @@ func TestPaymentUsecase_Add(t *testing.T) {
 				cvv:        "123",
 			},
 			want: wantedError,
-			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncrypt) {
+			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncryptType) {
 				u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", nil).Times(1)
 				u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", wantedError).Times(1)
 				m.EXPECT().Add(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(0)
@@ -96,7 +96,7 @@ func TestPaymentUsecase_Add(t *testing.T) {
 				cvv:        "123",
 			},
 			want: wantedError,
-			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncrypt) {
+			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncryptType) {
 				u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", nil).Times(2)
 				u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", wantedError).Times(1)
 				m.EXPECT().Add(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(0)
@@ -110,7 +110,7 @@ func TestPaymentUsecase_Add(t *testing.T) {
 			defer ctrl.Finish()
 
 			store := mock.NewMockPaymentStore(ctrl)
-			encrypt := utilMock.NewMockEncrypt(ctrl)
+			encrypt := utilMock.NewMockEncryptType(ctrl)
 			tt.mockFunc(store, encrypt)
 
 			u := &paymentUsecase{
