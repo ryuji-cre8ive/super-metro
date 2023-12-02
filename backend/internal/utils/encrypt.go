@@ -11,6 +11,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type EncryptType interface {
+	PasswordEncryptPasswordEncrypt(password string) (string, error)
+	CheckHashPassword(hashPassword, password string) error
+	Encrypt(plainText []byte, key []byte) (string, error)
+	Decrypt(encryptedData string, key []byte) ([]byte, error)
+}
+
+
 // 暗号化 (hash)
 func PasswordEncrypt(password string) (string, error) {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
