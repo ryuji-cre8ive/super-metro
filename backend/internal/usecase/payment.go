@@ -15,25 +15,23 @@ type (
 	}
 
 	paymentUsecase struct {
-		stores  *stores.Stores
-		encrypt utils.EncryptType
+		stores *stores.Stores
 	}
 )
 
 func (u *paymentUsecase) Add(c echo.Context, userId string, cardNumber string, expiryDate string, cvv string) error {
 	key := []byte(userId)[:32] // 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256
-
-	encryptedCardNumber, err := u.encrypt.Encrypt([]byte(cardNumber), key)
+	encryptedCardNumber, err := utils.Encrypt([]byte(cardNumber), key)
 	if err != nil {
 		return err
 	}
 
-	encryptedExpiryDate, err := u.encrypt.Encrypt([]byte(expiryDate), key)
+	encryptedExpiryDate, err := utils.Encrypt([]byte(expiryDate), key)
 	if err != nil {
 		return err
 	}
 
-	encryptedCVV, err := u.encrypt.Encrypt([]byte(cvv), key)
+	encryptedCVV, err := utils.Encrypt([]byte(cvv), key)
 	if err != nil {
 		return err
 	}

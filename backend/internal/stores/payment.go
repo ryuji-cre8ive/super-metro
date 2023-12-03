@@ -1,7 +1,6 @@
 package stores
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,9 +40,8 @@ func (s *paymentStore) Delete(userId string) error {
 
 func (s *paymentStore) Get(userId string) (*domain.Payment, error) {
 	var payment *domain.Payment
-	result := s.DB.Where("user_id = ? AND deleted_at IS NULL", userId).Find(&payment)
-	fmt.Println("result", payment)
-	if payment.ID == "" {
+	result := s.DB.Where("user_id = ? AND deleted_at IS NULL", userId).First(&payment)
+	if result.Error != nil {
 		return nil, nil
 	}
 	key := []byte(userId)[:32] // AES-256を選択するために32バイトを使用します。userIDはuuidで、36バイトですが、最初の32バイトだけを使用します。

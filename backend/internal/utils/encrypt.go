@@ -11,12 +11,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type EncryptType interface {
-	PasswordEncrypt(password string) (string, error)
-	CheckHashPassword(hashPassword, password string) error
-	Encrypt(plainText []byte, key []byte) (string, error)
-	Decrypt(encryptedData string, key []byte) ([]byte, error)
-}
+type (
+	EncryptType interface {
+		PasswordEncrypt(password string) (string, error)
+		CheckHashPassword(hashPassword, password string) error
+		Encrypt(plainText []byte, key []byte) (string, error)
+		Decrypt(encryptedData string, key []byte) ([]byte, error)
+	}
+	encryptType struct{}
+)
 
 // 暗号化 (hash)
 func PasswordEncrypt(password string) (string, error) {
