@@ -117,7 +117,6 @@ func TestPaymentUsecase_Add(t *testing.T) {
 				stores: &stores.Stores{
 					Payment: store,
 				},
-				encrypt: encrypt,
 			}
 
 			err := u.Add(tt.input.ctx, tt.input.userId, tt.input.cardNumber, tt.input.expiryDate, tt.input.cvv)
