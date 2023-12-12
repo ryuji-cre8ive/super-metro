@@ -7,12 +7,15 @@ import { useAuth } from "@/app/userContext";
 import { Button, Typography, Box, Paper } from "@mui/material";
 
 export default function SignOutPage() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const router = useRouter();
   const onSignOut = async () => {
+    const params = {
+      id: user?.id,
+    };
     window.localStorage.removeItem("session_token");
     logout();
-    await axios.post("/logout");
+    await axios.post("/logout", params);
     router.push("/");
   };
   return (
