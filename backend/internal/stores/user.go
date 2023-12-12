@@ -15,6 +15,9 @@ type (
 		Create(email string, userName string, password string) error
 		FindByEmail(email string) (*domain.User, error)
 		TopUp(id string, amount int) (*domain.User, error)
+		GetSession(id string) (string, error)
+		SetSession(id string, session string) error
+		IsCookieExist(cookieValue string) error
 	}
 
 	userStore struct {
@@ -53,4 +56,32 @@ func (s *userStore) TopUp(id string, amount int) (*domain.User, error) {
 	}
 	user.Valance += amount
 	return &user, s.DB.Save(&user).Error
+}
+
+func (s *userStore) GetSession(id string) (string, error) {
+	var user domain.User
+	result := s.DB.Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		return "", xerrors.Errorf("cannot find user by id: %w", result.Error)
+	}
+	return user.SessionToken, nil
+}
+
+func (s *userStore) SetSession(id string, session string) error {
+	var user domain.User
+	result := s.DB.Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		return xerrors.Errorf("cannot find user by id: %w", result.Error)
+	}
+	user.SessionToken = session
+	return s.DB.Save(&user).Error
+}
+
+func (s *userStore) IsCookieExist(cookieValue string) error {
+	var user domain.User
+	result := s.DB.Where("session_token = ?", cookieValue).First(&user)
+	if result.Error != nil {
+		return xerrors.Errorf("cannot find user by session_token: %w", result.Error)
+	}
+	return nil
 }

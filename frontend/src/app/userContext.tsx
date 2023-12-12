@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { useCookies } from "react-cookie";
 import { User } from "@/app/models/user";
 import { jwtDecode } from "jwt-decode";
 // Contextを作成
@@ -18,8 +19,9 @@ const AuthContext = createContext({
 
 // AuthProviderコンポーネントを作成
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [cookies] = useCookies<string>(["session_token"]);
   useEffect(() => {
-    const token = window.localStorage.getItem("session_token");
+    const token = cookies.session_token;
     if (!token) {
       return logout();
     }

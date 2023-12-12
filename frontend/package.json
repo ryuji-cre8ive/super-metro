@@ -19,6 +19,8 @@
     "jwt-decode": "^4.0.0",
     "next": "^13.5.4",
     "react": "^18",
+    "react-cookie": "^6.1.1",
+    "react-credit-cards-2": "^1.0.1",
     "react-dom": "^18",
     "require-hook": "^0.1.2"
   },

@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -17,6 +19,9 @@ type (
 		Login(c echo.Context) error
 		Logout(c echo.Context) error
 		TopUp(c echo.Context) error
+		Cookie(c echo.Context) error
+		IsCookieExist(c echo.Context, cookieValue string) error
+		CheckCookieExpiration() echo.MiddlewareFunc
 	}
 
 	userHandler struct {
@@ -72,7 +77,16 @@ func (h *userHandler) Login(c echo.Context) error {
 	if err != nil {
 		return xerrors.Errorf("failed to create JWT: %w", err)
 	}
-	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
+
+	if setSessionErr := h.UserUsecase.SetSession(c, user.ID, t); setSessionErr != nil {
+		return xerrors.Errorf("failed to set session: %w", setSessionErr)
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = "session_token"
+	cookie.Value = t
+	cookie.Expires = time.Now().Add(30 * time.Minute)
+	c.SetCookie(cookie)
 
 	user.SessionToken = t
 
@@ -81,6 +95,11 @@ func (h *userHandler) Login(c echo.Context) error {
 
 // This function handles user logout, invalidates the JWT by setting its expiration to the past, and sets this JWT in the response header
 func (h *userHandler) Logout(c echo.Context) error {
+	user := new(domain.User)
+	if err := c.Bind(user); err != nil {
+		return xerrors.Errorf("failed to bind User: %w", err)
+	}
+	fmt.Println("logout with user:", user)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["email"] = ""
@@ -90,6 +109,12 @@ func (h *userHandler) Logout(c echo.Context) error {
 	if err != nil {
 		return xerrors.Errorf("failed to create JWT: %w", err)
 	}
+	fmt.Println("logout with token:", t)
+
+	if setSessionErr := h.UserUsecase.SetSession(c, user.ID, t); setSessionErr != nil {
+		return xerrors.Errorf("failed to set session: %w", setSessionErr)
+	}
+
 	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
 
 	return c.String(200, "success")
@@ -130,5 +155,45 @@ func (h *userHandler) TopUp(c echo.Context) error {
 		return xerrors.Errorf("failed to create JWT: %w", err)
 	}
 	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
+
 	return c.JSON(200, map[string]interface{}{"sessionToken": t})
+}
+
+func (h *userHandler) Cookie(c echo.Context) error {
+	userId := c.Param("userID")
+	sessionToken, err := h.UserUsecase.GetSession(c, userId)
+	if err != nil {
+		return xerrors.Errorf("failed to get session: %w", err)
+	}
+	cookie := new(http.Cookie)
+	cookie.Name = "session_token"
+	cookie.Value = sessionToken
+	cookie.Expires = time.Now().Add(30 * time.Minute)
+	c.SetCookie(cookie)
+	return c.String(http.StatusOK, "write a cookie")
+}
+
+func (h *userHandler) CheckCookieExpiration() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cookie, err := c.Cookie("session_token")
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Need to Authorize: "+err.Error())
+			}
+
+			if checkErr := h.IsCookieExist(c, cookie.Value); checkErr != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Need to Authorize: "+checkErr.Error())
+			}
+
+			return next(c)
+		}
+	}
+}
+
+func (h *userHandler) IsCookieExist(c echo.Context, cookieValue string) error {
+	if existErr := h.UserUsecase.IsCookieExist(c, cookieValue); existErr != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Need to Authorize: "+existErr.Error())
+	}
+
+	return nil
 }

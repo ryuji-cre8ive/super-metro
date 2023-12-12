@@ -13,6 +13,9 @@ type (
 		Create(ctx echo.Context, email string, userName string, password string) error
 		FindByEmail(ctx echo.Context, email string) (*domain.User, error)
 		TopUp(ctx echo.Context, id string, amount int) (*domain.User, error)
+		GetSession(ctx echo.Context, id string) (string, error)
+		SetSession(ctx echo.Context, id string, session string) error
+		IsCookieExist(ctx echo.Context, cookieValue string) error
 	}
 
 	userUsecase struct {
@@ -43,4 +46,16 @@ func (u *userUsecase) TopUp(ctx echo.Context, id string, amount int) (*domain.Us
 		return nil, xerrors.Errorf("failed to top up: %w", err)
 	}
 	return user, nil
+}
+
+func (u *userUsecase) GetSession(ctx echo.Context, id string) (string, error) {
+	return u.stores.User.GetSession(id)
+}
+
+func (u *userUsecase) SetSession(ctx echo.Context, id string, session string) error {
+	return u.stores.User.SetSession(id, session)
+}
+
+func (u *userUsecase) IsCookieExist(ctx echo.Context, cookieValue string) error {
+	return u.stores.User.IsCookieExist(cookieValue)
 }

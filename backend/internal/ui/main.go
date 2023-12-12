@@ -24,17 +24,20 @@ func New(u *usecase.Usecase) *Handler {
 
 func SetApi(e *echo.Echo, h *Handler) {
 	g := e.Group("/api/v1")
+	authGroup := e.Group("/api/v1")
+	authGroup.Use(h.UserHandler.CheckCookieExpiration())
 	g.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 	g.GET("/healthcheck", HealthCheckHandler)
 	g.POST("/signup", h.UserHandler.Create)
 	g.POST("/login", h.UserHandler.Login)
-	g.POST("/logout", h.UserHandler.Logout)
-	g.POST("/top-up", h.UserHandler.TopUp)
+	g.GET("/cookie/:userID", h.UserHandler.Cookie)
+	authGroup.POST("/logout", h.UserHandler.Logout)
+	authGroup.POST("/top-up", h.UserHandler.TopUp)
 
-	g.GET("/credit-card/:userID", h.PaymentHandler.Get)
-	g.POST("/credit-card/add", h.PaymentHandler.Add)
+	authGroup.GET("/credit-card/:userID", h.PaymentHandler.Get)
+	authGroup.POST("/credit-card/add", h.PaymentHandler.Add)
 
-	g.GET("/transaction/:userID", h.TransactionHandler.Get)
+	authGroup.GET("/transaction/:userID", h.TransactionHandler.Get)
 }
 
 func Echo() *echo.Echo {
