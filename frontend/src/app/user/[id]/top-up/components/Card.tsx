@@ -13,6 +13,8 @@ import {
 import CardSkeleton from "./CardSkelton";
 import { useState } from "react";
 import CustomSnackBar, { Severity } from "@/components/SnackBar";
+import Cards from "react-credit-cards-2";
+import "react-credit-cards-2/dist/es/styles-compiled.css";
 
 const style = {
   position: "absolute" as "absolute",
@@ -107,51 +109,67 @@ const CreditCard = ({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Card sx={{ ...style, maxWidth: 345, Height: 400 }}>
-          <CardContent>
-            Current Card: ****{currentCardNumber.slice(-4)}
-          </CardContent>
-          <CardContent>Please fill in new credit card</CardContent>
-          <TextField
-            fullWidth
-            label="Card Number"
-            onChange={onChangeCardNumberHandler}
-            error={
-              cardNumber ? cardNumber.replace(/\D/g, "").length !== 16 : false
-            }
-            helperText={helperTextForCardNumber}
-          />
-          <Box sx={{ display: "flex" }}>
-            <TextField
-              label="Expiry Date"
-              error={
-                expiryDate ? expiryDate.replace(/\D/g, "").length !== 4 : false
-              }
-              onChange={onChangeExpiryDateHandler}
-              helperText={helperTextForExpiryDate}
-            />
-            <TextField
-              label="CVV"
-              error={cvv ? cvv.replace(/\D/g, "").length !== 3 : false}
-              onChange={(e) => {
-                e.target.value = e.target.value
-                  .replace(/\D/g, "")
-                  .substring(0, 3);
-                setCVV(e.target.value);
-              }}
-              helperText={helperTextForCVV}
-            />
+        <Card
+          sx={{
+            ...style,
+            maxWidth: 1500,
+            width: "60%",
+            Height: 900,
+            display: "flex",
+            justifyContent: "space-around",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Cards cvc={cvv} expiry={expiryDate} name="" number={cardNumber} />
           </Box>
 
-          <CardActions>
-            <Button
-              color="success"
-              onClick={handleSubmit}
-              sx={{ marginLeft: "auto" }}
-            >
-              Submit
-            </Button>
-          </CardActions>
+          <Box>
+            <CardContent>
+              Current Card: ****{currentCardNumber.slice(-4)}
+            </CardContent>
+            <CardContent>Please fill in new credit card</CardContent>
+            <TextField
+              fullWidth
+              label="Card Number"
+              onChange={onChangeCardNumberHandler}
+              error={
+                cardNumber ? cardNumber.replace(/\D/g, "").length !== 16 : false
+              }
+              helperText={helperTextForCardNumber}
+            />
+            <Box sx={{ display: "flex" }}>
+              <TextField
+                label="Expiry Date"
+                error={
+                  expiryDate
+                    ? expiryDate.replace(/\D/g, "").length !== 4
+                    : false
+                }
+                onChange={onChangeExpiryDateHandler}
+                helperText={helperTextForExpiryDate}
+              />
+              <TextField
+                label="CVV"
+                error={cvv ? cvv.replace(/\D/g, "").length !== 3 : false}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "")
+                    .substring(0, 3);
+                  setCVV(e.target.value);
+                }}
+                helperText={helperTextForCVV}
+              />
+            </Box>
+            <CardActions>
+              <Button
+                color="success"
+                onClick={handleSubmit}
+                sx={{ marginLeft: "auto" }}
+              >
+                Submit
+              </Button>
+            </CardActions>
+          </Box>
         </Card>
       </Modal>
     </>
