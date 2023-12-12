@@ -1,19 +1,19 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+frontend/node_modules/
+frontend/.pnp
+frontend/.pnp.js
 
 # testing
-/coverage
+frontend/coverage
 
 # next.js
-/.next/
-/out/
+frontend/.next/
+frontend/out/
 
 # production
-/build
+frontend/build
 
 # misc
 .DS_Store
@@ -28,10 +28,14 @@ yarn-error.log*
 .env*.local
 
 # vercel
-.vercel
+frontend/.vercel
 
 # typescript
-*.tsbuildinfo
-next-env.d.ts
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
 
 .env
+
+backend/dbconfig.yml
+
+backend/tmp/
