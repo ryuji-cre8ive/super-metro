@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --check --ignore-path .gitignore .",
+    "format:fix": "prettier --write --ignore-path .gitignore ."
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -14,15 +16,22 @@
     "@mui/icons-material": "^5.14.16",
     "@mui/lab": "^5.0.0-alpha.152",
     "@mui/material": "^5.14.16",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-slot": "^1.0.2",
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.5.1",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
     "jwt-decode": "^4.0.0",
-    "next": "^13.5.4",
+    "lucide-react": "^0.295.0",
+    "next": "^13.5.6",
     "react": "^18",
     "react-cookie": "^6.1.1",
     "react-credit-cards-2": "^1.0.1",
     "react-dom": "^18",
-    "require-hook": "^0.1.2"
+    "require-hook": "^0.1.2",
+    "tailwind-merge": "^2.1.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -31,7 +40,9 @@
     "autoprefixer": "^10.4.16",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",
+    "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.4.32",
+    "prettier": "^2.8.8",
     "tailwindcss": "^3.3.6",
     "typescript": "^5"
   }
