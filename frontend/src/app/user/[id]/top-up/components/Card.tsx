@@ -113,7 +113,7 @@ const CreditCard = ({
           sx={{
             ...style,
             maxWidth: 1500,
-            width: "60%",
+            width: "50%",
             Height: 900,
             display: "flex",
             justifyContent: "space-around",
@@ -123,7 +123,7 @@ const CreditCard = ({
             <Cards cvc={cvv} expiry={expiryDate} name="" number={cardNumber} />
           </Box>
 
-          <Box>
+          <Box sx={{ width: "300px" }}>
             <CardContent>
               Current Card: ****{currentCardNumber.slice(-4)}
             </CardContent>
