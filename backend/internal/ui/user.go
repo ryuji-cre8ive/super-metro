@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -135,7 +134,10 @@ func (h *userHandler) TopUp(c echo.Context) error {
 	if err != nil {
 		return xerrors.Errorf("failed to create JWT: %w", err)
 	}
-	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
+
+	if setSessionErr := h.UserUsecase.SetSession(c, user.ID, t); setSessionErr != nil {
+		return xerrors.Errorf("failed to set session: %w", setSessionErr)
+	}
 
 	return c.JSON(200, map[string]interface{}{"sessionToken": t})
 }
