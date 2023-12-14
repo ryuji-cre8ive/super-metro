@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 export async function GET(request: NextRequest) {
   if (!request.url) {
@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
     console.error(error);
     return NextResponse.error();
   }
-  console.log("bodyです", body);
   const config = {
     method: request.method.toLowerCase(),
     url: url,
@@ -46,13 +45,12 @@ export async function POST(request: NextRequest) {
     if (!res.headers["set-cookie"]) {
       return NextResponse.error();
     }
-    let setCookieValue = res.headers["set-cookie"][0];
-    let [cookieFullValue] = setCookieValue.split(";");
-    let [cookieName, cookieValue] = cookieFullValue.split("=");
+    const [cookieFullValue] = res.headers["set-cookie"][0].split(";");
+    const [cookieName, cookieValue] = cookieFullValue.split("=");
 
-    let BffResponse = NextResponse.json(res.data);
-    BffResponse.cookies.set(cookieName, cookieValue);
-    return BffResponse;
+    let bff = NextResponse.json(res.data);
+    bff.cookies.set(cookieName, cookieValue);
+    return bff;
   } catch (error) {
     return NextResponse.error();
   }
