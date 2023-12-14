@@ -42,15 +42,18 @@ export async function POST(request: NextRequest) {
   };
   try {
     const res = await axios(config);
-    if (!res.headers["set-cookie"]) {
+    if (!res.headers.authorization) {
       return NextResponse.error();
     }
-    const [cookieFullValue] = res.headers["set-cookie"][0].split(";");
-    const [cookieName, cookieValue] = cookieFullValue.split("=");
-
-    let bff = NextResponse.json(res.data);
-    bff.cookies.set(cookieName, cookieValue);
-    return bff;
+    const authToken = res.headers.authorization.split(" ")[1];
+    const bffRes = NextResponse.json(res.data);
+    bffRes.cookies.set("session_token", authToken, {
+      httpOnly: true,
+      path: "/",
+      expires: new Date(Date.now() + 1000 * 60 * 30),
+      sameSite: "lax",
+    });
+    return bffRes;
   } catch (error) {
     return NextResponse.error();
   }
