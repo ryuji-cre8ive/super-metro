@@ -82,41 +82,22 @@ func (h *userHandler) Login(c echo.Context) error {
 		return xerrors.Errorf("failed to set session: %w", setSessionErr)
 	}
 
-	cookie := new(http.Cookie)
-	cookie.Name = "session_token"
-	cookie.Value = t
-	cookie.Expires = time.Now().Add(30 * time.Minute)
-	c.SetCookie(cookie)
-
-	user.SessionToken = t
+	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
 
 	return c.JSON(200, user)
 }
 
 // This function handles user logout, invalidates the JWT by setting its expiration to the past, and sets this JWT in the response header
 func (h *userHandler) Logout(c echo.Context) error {
-	user := new(domain.User)
-	if err := c.Bind(user); err != nil {
+	param := new(domain.User)
+	if err := c.Bind(param); err != nil {
 		return xerrors.Errorf("failed to bind User: %w", err)
 	}
-	fmt.Println("logout with user:", user)
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["email"] = ""
-	claims["exp"] = time.Now().Add(-time.Hour).Unix()
-
-	t, err := token.SignedString([]byte("your_secret_key"))
-	if err != nil {
-		return xerrors.Errorf("failed to create JWT: %w", err)
-	}
-	fmt.Println("logout with token:", t)
-
-	if setSessionErr := h.UserUsecase.SetSession(c, user.ID, t); setSessionErr != nil {
+	userID := param.ID
+	t := ""
+	if setSessionErr := h.UserUsecase.SetSession(c, userID, t); setSessionErr != nil {
 		return xerrors.Errorf("failed to set session: %w", setSessionErr)
 	}
-
-	c.Response().Header().Set(echo.HeaderAuthorization, "Bearer "+t)
-
 	return c.String(200, "success")
 }
 
