@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
 
 import Map from "@/components/GoogleMap";
 import InputWithIcon, { InputLabel } from "@/components/InputWithIcon";
@@ -64,7 +63,6 @@ export default function Page({ params }: { params: { id: string } }) {
         </div>
 
         <section style={{ flex: "3", margin: "10px" }}>
-          <h1>Routes</h1>
           {directions &&
             directions.routes.map((route, index) => (
               <RouteDetails route={route} key={index} />

@@ -9,6 +9,7 @@ import React, {
 import { useCookies } from "react-cookie";
 import { User } from "@/app/models/user";
 import { jwtDecode } from "jwt-decode";
+import axios from "@/api/axiosConfig";
 // Contextを作成
 const AuthContext = createContext({
   user: {} as User | null | undefined,
@@ -19,26 +20,35 @@ const AuthContext = createContext({
 
 // AuthProviderコンポーネントを作成
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [cookies] = useCookies<string>(["session_token"]);
+  // const [cookies] = useCookies<string>(["session_token"]);
+  // console.log("token", cookies.session_token);
+  // const token = cookies.session_token;
+  const getUserInfo = async () => {
+    const res = await axios.get("/user");
+    console.log(res.data);
+    return res.data;
+  };
+
   useEffect(() => {
-    const token = cookies.session_token;
-    if (!token) {
-      return logout();
-    }
-    const decodedToken = jwtDecode(token) as User;
-    if (!decodedToken) {
-      return;
-    }
-    const userInfo: User = {
-      id: decodedToken.id,
-      password: "",
-      email: decodedToken.email,
-      userName: decodedToken.userName,
-      valance: decodedToken.valance,
-      sessionToken: "",
+    const fetchData = async () => {
+      const data = await getUserInfo();
+      if (!data) {
+        return logout();
+      }
+      const userInfo: User = {
+        id: data.id,
+        password: "",
+        email: data.email,
+        userName: data.userName,
+        valance: data.valance,
+        sessionToken: "",
+      };
+      console.log(userInfo);
+
+      setUser(userInfo);
     };
 
-    setUser(userInfo);
+    fetchData();
   }, []);
   const [user, setUser] = useState<User | null>();
 

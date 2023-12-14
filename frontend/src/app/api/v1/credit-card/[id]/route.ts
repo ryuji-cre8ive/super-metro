@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 export async function GET(request: NextRequest) {
   if (!request.url) {
@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
     const res = await axios(config);
     return NextResponse.json(res.data);
   } catch (error) {
-    console.error(error);
     return NextResponse.error();
   }
 }
