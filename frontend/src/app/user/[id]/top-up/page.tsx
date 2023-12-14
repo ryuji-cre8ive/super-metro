@@ -16,6 +16,7 @@ import { useAuth } from "@/app/userContext";
 import axios from "@/api/axiosConfig";
 import { AxiosResponse } from "axios";
 import Card from "./components/Card";
+import { Topup } from "@/components/TopUp";
 
 const TopUp = () => {
   const { user, topUp } = useAuth();
@@ -80,14 +81,21 @@ const TopUp = () => {
     return pattern.test(value);
   };
 
+  const onChangeAmount = (amount: number) => {
+    setErrOpen(false);
+    setAmount(amount);
+  };
+
   const handleAmount = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    if (!isNumber(e.target.value)) {
-      return setErrOpen(true);
+    e.preventDefault();
+
+    if (!e.target.value) {
+      setAmount(null);
+      return;
     }
-    setErrOpen(false);
-    setAmount(Number(e.target.value));
+    onChangeAmount(Number(e.target.value));
   };
 
   const handleTopUp = () => {
@@ -125,29 +133,19 @@ const TopUp = () => {
         alignItems: "center",
       }}
     >
-      <Image src={EWalletPic} alt="e-wallets" loading="lazy" width={300} />
       <Card
         onSubmit={onSubmit}
         currentCardNumber={cardNumber}
         userId={user ? user.id : ""}
         onChangeCardNumber={onChangeCardNumber}
       />
-      {}
-      <Typography variant="subtitle1">
-        Valance: {user && user.valance}
-      </Typography>
-      <TextField label="Amount" onChange={handleAmount} />
-      <LoadingButton
-        color="primary"
-        onClick={handleTopUp}
+      <Topup
+        currentBalance={user ? user.valance : 0}
+        amount={amount}
+        handleTopUp={handleTopUp}
+        handleAmount={handleAmount}
         loading={loading}
-        loadingPosition="center"
-        endIcon={<SendIcon />}
-        variant="contained"
-        disabled={!amount || !cardNumber}
-      >
-        <span>TopUp!!</span>
-      </LoadingButton>
+      />
       <CustomSnackBar
         open={errOpen}
         setOpen={setErrOpen}
