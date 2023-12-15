@@ -337,3 +337,58 @@ func TestUserUsecase_SetSession(t *testing.T) {
 		})
 	}
 }
+
+func TestUserUsecase_IsCookieExist(t *testing.T) {
+	type input struct {
+		ctx         echo.Context
+		cookieValue string
+	}
+
+	wantedError := xerrors.New("error")
+
+	tests := map[string]struct {
+		input    input
+		want     error
+		mockFunc func(m *mock.MockUserStore)
+	}{
+		"success": {
+			input: input{
+				ctx:         nil,
+				cookieValue: "",
+			},
+			want: nil,
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().IsCookieExist(gomock.Any()).Return(nil).Times(1)
+			},
+		},
+		"failed: standard-error": {
+			input: input{
+				ctx:         nil,
+				cookieValue: "",
+			},
+			want: wantedError,
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().IsCookieExist(gomock.Any()).Return(wantedError).Times(1)
+			},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mock.NewMockUserStore(ctrl)
+			tt.mockFunc(store)
+
+			u := &userUsecase{
+				stores: &stores.Stores{
+					User: store,
+				},
+			}
+
+			err := u.IsCookieExist(tt.input.ctx, tt.input.cookieValue)
+			assert.Equal(t, tt.want, err)
+		})
+	}
+}
