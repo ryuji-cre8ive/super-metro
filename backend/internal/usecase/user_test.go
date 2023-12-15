@@ -152,3 +152,68 @@ func TestUserUsecase_FindByEmail(t *testing.T) {
 		})
 	}
 }
+
+func TestUserUsecase_TopUp(t *testing.T) {
+	type input struct {
+		ctx    echo.Context
+		id     string
+		amount int
+	}
+
+	wantedError := xerrors.New("error")
+
+	tests := map[string]struct {
+		input    input
+		want     *domain.User
+		wantErr  error
+		mockFunc func(m *mock.MockUserStore)
+	}{
+		"success": {
+			input: input{
+				ctx:    nil,
+				id:     "6d1c3e1b-d068-431f-b188-a436ac54ce52",
+				amount: 100,
+			},
+			want:    &domain.User{},
+			wantErr: nil,
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().TopUp(gomock.Any(), gomock.Any()).Return(&domain.User{}, nil).Times(1)
+			},
+		},
+		"failed: standard-error": {
+			input: input{
+				ctx:    nil,
+				id:     "",
+				amount: 100,
+			},
+			want:    nil,
+			wantErr: xerrors.Errorf("failed to top up: %w", wantedError),
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().TopUp(gomock.Any(), gomock.Any()).Return(nil, wantedError).Times(1)
+			},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mock.NewMockUserStore(ctrl)
+			tt.mockFunc(store)
+
+			u := &userUsecase{
+				stores: &stores.Stores{
+					User: store,
+				},
+			}
+
+			user, err := u.TopUp(tt.input.ctx, tt.input.id, tt.input.amount)
+			if err != nil {
+				assert.Equal(t, user, tt.want)
+			} else {
+				assert.Equal(t, tt.wantErr, err)
+			}
+		})
+	}
+}
