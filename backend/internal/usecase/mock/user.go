@@ -11,7 +11,7 @@ package mock_usecase
 import (
 	reflect "reflect"
 
-	v4 "github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v4"
 	domain "github.com/ryuji-cre8ive/super-metro/internal/domain"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -40,7 +40,7 @@ func (m *MockUserUsecase) EXPECT() *MockUserUsecaseMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockUserUsecase) Create(ctx v4.Context, email, userName, password string) error {
+func (m *MockUserUsecase) Create(ctx echo.Context, email, userName, password string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, email, userName, password)
 	ret0, _ := ret[0].(error)
@@ -54,7 +54,7 @@ func (mr *MockUserUsecaseMockRecorder) Create(ctx, email, userName, password any
 }
 
 // FindByEmail mocks base method.
-func (m *MockUserUsecase) FindByEmail(ctx v4.Context, email string) (*domain.User, error) {
+func (m *MockUserUsecase) FindByEmail(ctx echo.Context, email string) (*domain.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByEmail", ctx, email)
 	ret0, _ := ret[0].(*domain.User)
@@ -68,8 +68,51 @@ func (mr *MockUserUsecaseMockRecorder) FindByEmail(ctx, email any) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserUsecase)(nil).FindByEmail), ctx, email)
 }
 
+// GetSession mocks base method.
+func (m *MockUserUsecase) GetSession(ctx echo.Context, id string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSession", ctx, id)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSession indicates an expected call of GetSession.
+func (mr *MockUserUsecaseMockRecorder) GetSession(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockUserUsecase)(nil).GetSession), ctx, id)
+}
+
+// IsCookieExist mocks base method.
+func (m *MockUserUsecase) IsCookieExist(ctx echo.Context, cookieValue string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsCookieExist", ctx, cookieValue)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// IsCookieExist indicates an expected call of IsCookieExist.
+func (mr *MockUserUsecaseMockRecorder) IsCookieExist(ctx, cookieValue any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsCookieExist", reflect.TypeOf((*MockUserUsecase)(nil).IsCookieExist), ctx, cookieValue)
+}
+
+// SetSession mocks base method.
+func (m *MockUserUsecase) SetSession(ctx echo.Context, id, session string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetSession", ctx, id, session)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetSession indicates an expected call of SetSession.
+func (mr *MockUserUsecaseMockRecorder) SetSession(ctx, id, session any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSession", reflect.TypeOf((*MockUserUsecase)(nil).SetSession), ctx, id, session)
+}
+
 // TopUp mocks base method.
-func (m *MockUserUsecase) TopUp(ctx v4.Context, id string, amount int) (*domain.User, error) {
+func (m *MockUserUsecase) TopUp(ctx echo.Context, id string, amount int) (*domain.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TopUp", ctx, id, amount)
 	ret0, _ := ret[0].(*domain.User)

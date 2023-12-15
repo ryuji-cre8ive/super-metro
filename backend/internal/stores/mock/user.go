@@ -67,6 +67,49 @@ func (mr *MockUserStoreMockRecorder) FindByEmail(email any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserStore)(nil).FindByEmail), email)
 }
 
+// GetSession mocks base method.
+func (m *MockUserStore) GetSession(id string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSession", id)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSession indicates an expected call of GetSession.
+func (mr *MockUserStoreMockRecorder) GetSession(id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockUserStore)(nil).GetSession), id)
+}
+
+// IsCookieExist mocks base method.
+func (m *MockUserStore) IsCookieExist(cookieValue string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsCookieExist", cookieValue)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// IsCookieExist indicates an expected call of IsCookieExist.
+func (mr *MockUserStoreMockRecorder) IsCookieExist(cookieValue any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsCookieExist", reflect.TypeOf((*MockUserStore)(nil).IsCookieExist), cookieValue)
+}
+
+// SetSession mocks base method.
+func (m *MockUserStore) SetSession(id, session string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetSession", id, session)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetSession indicates an expected call of SetSession.
+func (mr *MockUserStoreMockRecorder) SetSession(id, session any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSession", reflect.TypeOf((*MockUserStore)(nil).SetSession), id, session)
+}
+
 // TopUp mocks base method.
 func (m *MockUserStore) TopUp(id string, amount int) (*domain.User, error) {
 	m.ctrl.T.Helper()
