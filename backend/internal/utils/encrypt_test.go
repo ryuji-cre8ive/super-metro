@@ -138,3 +138,32 @@ func TestPasswordEncrypt(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckHashPassword(t *testing.T) {
+	type input struct {
+		password string
+	}
+
+	tests := map[string]struct {
+		input   input
+		wantErr bool
+	}{
+		"success": {
+			input: input{
+				password: "testPassword",
+			},
+			wantErr: false,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			hashedPassword, _ := PasswordEncrypt(tt.input.password)
+			err := CheckHashPassword(hashedPassword, tt.input.password)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CheckHashPassword() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
