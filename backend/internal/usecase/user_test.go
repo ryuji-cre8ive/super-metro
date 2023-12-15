@@ -217,3 +217,65 @@ func TestUserUsecase_TopUp(t *testing.T) {
 		})
 	}
 }
+
+func TestUserUsecase_GetSession(t *testing.T) {
+	type input struct {
+		ctx echo.Context
+		id  string
+	}
+
+	wantedError := xerrors.New("error")
+
+	tests := map[string]struct {
+		input    input
+		want     string
+		wantErr  error
+		mockFunc func(m *mock.MockUserStore)
+	}{
+		"success": {
+			input: input{
+				ctx: nil,
+				id:  "6d1c3e1b-d068-431f-b188-a436ac54ce52",
+			},
+			want:    "",
+			wantErr: nil,
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().GetSession(gomock.Any()).Return("", nil).Times(1)
+			},
+		},
+		"failed: standard-error": {
+			input: input{
+				ctx: nil,
+				id:  "",
+			},
+			want:    "",
+			wantErr: xerrors.Errorf("failed to get session: %w", wantedError),
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().GetSession(gomock.Any()).Return("", wantedError).Times(1)
+			},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mock.NewMockUserStore(ctrl)
+			tt.mockFunc(store)
+
+			u := &userUsecase{
+				stores: &stores.Stores{
+					User: store,
+				},
+			}
+
+			session, err := u.GetSession(tt.input.ctx, tt.input.id)
+			if err != nil {
+				assert.Equal(t, session, tt.want)
+			} else {
+				assert.Equal(t, tt.wantErr, err)
+			}
+		})
+	}
+}
