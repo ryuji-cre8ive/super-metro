@@ -279,3 +279,61 @@ func TestUserUsecase_GetSession(t *testing.T) {
 		})
 	}
 }
+
+func TestUserUsecase_SetSession(t *testing.T) {
+	type input struct {
+		ctx     echo.Context
+		id      string
+		session string
+	}
+
+	wantedError := xerrors.New("error")
+
+	tests := map[string]struct {
+		input    input
+		want     error
+		mockFunc func(m *mock.MockUserStore)
+	}{
+		"success": {
+			input: input{
+				ctx:     nil,
+				id:      "6d1c3e1b-d068-431f-b188-a436ac54ce52",
+				session: "",
+			},
+			want: nil,
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().SetSession(gomock.Any(), gomock.Any()).Return(nil).Times(1)
+			},
+		},
+		"failed: standard-error": {
+			input: input{
+				ctx:     nil,
+				id:      "",
+				session: "",
+			},
+			want: wantedError,
+			mockFunc: func(m *mock.MockUserStore) {
+				m.EXPECT().SetSession(gomock.Any(), gomock.Any()).Return(wantedError).Times(1)
+			},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mock.NewMockUserStore(ctrl)
+			tt.mockFunc(store)
+
+			u := &userUsecase{
+				stores: &stores.Stores{
+					User: store,
+				},
+			}
+
+			err := u.SetSession(tt.input.ctx, tt.input.id, tt.input.session)
+			assert.Equal(t, tt.want, err)
+		})
+	}
+}
