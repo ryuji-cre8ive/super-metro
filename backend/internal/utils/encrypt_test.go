@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func TestPasswordEncrypt(t *testing.T) {
+func TestEncrypt(t *testing.T) {
 	type input struct {
 		text []byte
 		key  []byte
@@ -92,6 +93,47 @@ func TestEncryptDecrypt(t *testing.T) {
 
 			if string(decrypted) != tt.want {
 				t.Errorf("Decrypt text doesn't match original text")
+			}
+		})
+	}
+}
+
+func TestPasswordEncrypt(t *testing.T) {
+	type input struct {
+		password string
+	}
+
+	tests := map[string]struct {
+		input   input
+		wantErr bool
+	}{
+		"success": {
+			input: input{
+				password: "testPassword",
+			},
+			wantErr: false,
+		},
+		"empty password": {
+			input: input{
+				password: "",
+			},
+			wantErr: false,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			hashedPassword, err := PasswordEncrypt(tt.input.password)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("PasswordEncrypt() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !tt.wantErr {
+				err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(tt.input.password))
+				if err != nil {
+					t.Errorf("PasswordEncrypt() failed password verification, error: %v", err)
+				}
 			}
 		})
 	}
