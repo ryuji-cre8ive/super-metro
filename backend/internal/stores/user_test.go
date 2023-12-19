@@ -113,3 +113,69 @@ func TestUserStore_FindByEmail(t *testing.T) {
 		})
 	}
 }
+
+func TestUserStore_TopUp(t *testing.T) {
+	type input struct {
+		id     string
+		amount int
+	}
+
+	tests := map[string]struct {
+		input   input
+		wantErr bool
+	}{
+		"success": {
+			input: input{
+				id:     "1",
+				amount: 100,
+			},
+			wantErr: false,
+		},
+		"failed": {
+			input: input{
+				id:     "2",
+				amount: 100,
+			},
+			wantErr: true,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			sqlDB, mock, _ := sqlmock.New()
+			defer sqlDB.Close()
+
+			db, _ := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+
+			s := &userStore{
+				DB: db,
+			}
+
+			if tt.wantErr {
+				mock.ExpectQuery("^SELECT (.+) FROM \"users\" WHERE id = (.+) ORDER BY \"users\".\"id\" LIMIT 1").WithArgs(tt.input.id).WillReturnError(errors.New("database error"))
+			} else {
+				mock.ExpectQuery("^SELECT (.+) FROM \"users\" WHERE id = (.+) ORDER BY \"users\".\"id\" LIMIT 1").
+					WithArgs(tt.input.id).
+					WillReturnRows(sqlmock.NewRows([]string{"id", "balance"}).AddRow(tt.input.id, 0))
+
+				mock.ExpectBegin()
+				mock.ExpectExec("^UPDATE \"users\"").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectCommit()
+			}
+
+			user, err := s.TopUp(tt.input.id, tt.input.amount)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("TopUp() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if err == nil && user.Valance != tt.input.amount {
+				t.Errorf("TopUp() = %v, want %v", user.Valance, tt.input.amount)
+			}
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("there were unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
