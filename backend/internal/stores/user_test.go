@@ -242,3 +242,68 @@ func TestUserStore_GetSession(t *testing.T) {
 		})
 	}
 }
+
+func TestUserStore_SetSession(t *testing.T) {
+	type input struct {
+		id      string
+		session string
+	}
+
+	tests := map[string]struct {
+		input   input
+		wantErr bool
+	}{
+		"success": {
+			input: input{
+				id:      "1",
+				session: "session_token",
+			},
+			wantErr: false,
+		},
+		"failed": {
+			input: input{
+				id:      "2",
+				session: "session_token",
+			},
+			wantErr: true,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			sqlDB, mock, _ := sqlmock.New()
+			defer sqlDB.Close()
+
+			db, _ := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+
+			s := &userStore{
+				DB: db,
+			}
+
+			if tt.wantErr {
+				mock.ExpectQuery("^SELECT (.+) FROM \"users\" WHERE id = (.+) ORDER BY \"users\".\"id\" LIMIT 1").
+					WithArgs(tt.input.id).
+					WillReturnError(errors.New("database error"))
+			} else {
+				rows := sqlmock.NewRows([]string{"id", "session_token"}).AddRow(tt.input.id, "")
+				mock.ExpectQuery("^SELECT (.+) FROM \"users\" WHERE id = (.+) ORDER BY \"users\".\"id\" LIMIT 1").
+					WithArgs(tt.input.id).
+					WillReturnRows(rows)
+
+				mock.ExpectBegin()
+				mock.ExpectExec("^UPDATE \"users\"").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectCommit()
+			}
+
+			err := s.SetSession(tt.input.id, tt.input.session)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SetSession() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("there were unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
