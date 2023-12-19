@@ -307,3 +307,60 @@ func TestUserStore_SetSession(t *testing.T) {
 		})
 	}
 }
+
+func TestUserStore_IsCookieExist(t *testing.T) {
+	type input struct {
+		cookieValue string
+	}
+
+	tests := map[string]struct {
+		input   input
+		wantErr bool
+	}{
+		"success": {
+			input: input{
+				cookieValue: "session_token",
+			},
+			wantErr: false,
+		},
+		"failed": {
+			input: input{
+				cookieValue: "session_token",
+			},
+			wantErr: true,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			sqlDB, mock, _ := sqlmock.New()
+			defer sqlDB.Close()
+
+			db, _ := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+
+			s := &userStore{
+				DB: db,
+			}
+
+			if tt.wantErr {
+				mock.ExpectQuery("^SELECT (.+) FROM \"users\" WHERE session_token = (.+) ORDER BY \"users\".\"id\" LIMIT 1").
+					WithArgs(tt.input.cookieValue).
+					WillReturnError(errors.New("database error"))
+			} else {
+				rows := sqlmock.NewRows([]string{"id", "session_token"}).AddRow("1", tt.input.cookieValue)
+				mock.ExpectQuery("^SELECT (.+) FROM \"users\" WHERE session_token = (.+) ORDER BY \"users\".\"id\" LIMIT 1").
+					WithArgs(tt.input.cookieValue).
+					WillReturnRows(rows)
+			}
+
+			err := s.IsCookieExist(tt.input.cookieValue)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("IsCookieExist() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("there were unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
