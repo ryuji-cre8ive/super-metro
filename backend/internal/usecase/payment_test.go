@@ -40,7 +40,6 @@ func TestPaymentUsecase_Add(t *testing.T) {
 			},
 			want: nil,
 			mockFunc: func(m *mock.MockPaymentStore, u *utilMock.MockEncryptType) {
-				// u.EXPECT().Encrypt(gomock.Any(), gomock.Any()).Return("", nil).Times(3)
 				m.EXPECT().Add(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 			},
 		},
