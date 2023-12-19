@@ -159,3 +159,61 @@ func TestPaymentHandler_Add(t *testing.T) {
 		})
 	}
 }
+
+func TestPaymentHandler_Get(t *testing.T) {
+	type input struct {
+		ctx    *echo.Echo
+		userId string
+	}
+
+	tests := map[string]struct {
+		input    input
+		wantErr  bool
+		mockFunc func(m *mock.MockPaymentUsecase)
+	}{
+		"success": {
+			input: input{
+				ctx:    echo.New(),
+				userId: "testID",
+			},
+			wantErr: false,
+			mockFunc: func(m *mock.MockPaymentUsecase) {
+				m.EXPECT().Get(gomock.Any(), gomock.Any()).Return(&domain.Payment{}, nil).Times(1)
+			},
+		},
+		"failed: get payment": {
+			input: input{
+				ctx:    echo.New(),
+				userId: "testID",
+			},
+			wantErr: true,
+			mockFunc: func(m *mock.MockPaymentUsecase) {
+				m.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil, errors.New("failed to get Payment")).Times(1)
+			},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			paymentUsecase := mock.NewMockPaymentUsecase(ctrl)
+			tt.mockFunc(paymentUsecase)
+
+			h := &paymentHandler{
+				PaymentUsecase: paymentUsecase,
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/?userID="+tt.input.userId, nil)
+			rec := httptest.NewRecorder()
+			c := tt.input.ctx.NewContext(req, rec)
+
+			err := h.Get(c)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
