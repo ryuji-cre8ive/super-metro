@@ -13,8 +13,6 @@ type (
 	TransactionStore interface {
 		Add(userId string, paymentId string, transactionType string, amount int) error
 		Get(userId string) ([]*domain.Transaction, error)
-		// Delete(userId string) error
-		// GetCreditCard(userId string) (*domain.Payment, error)
 	}
 
 	transactionStore struct {
@@ -43,7 +41,3 @@ func (s *transactionStore) Get(userId string) ([]*domain.Transaction, error) {
 
 	return transactions, nil
 }
-
-// func (s *paymentStore) Delete(userId string) error {
-// 	return s.DB.Model(&domain.Payment{}).Where("user_id = ?", userId).Update("DeletedAt", time.Now()).Error
-// }
