@@ -17,7 +17,6 @@ export default function RouteDetail({
 }: {
   route: google.maps.DirectionsRoute;
 }) {
-  console.log(route);
   const legs = route.legs;
   if (!legs[0].departure_time || !legs[0].arrival_time) return null;
   const departureTime = new Date(legs[0].departure_time?.value);

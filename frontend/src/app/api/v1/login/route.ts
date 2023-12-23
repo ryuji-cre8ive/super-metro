@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
     const res = await axios(config);
     return NextResponse.json(res.data);
   } catch (error) {
-    console.error(error);
     return NextResponse.error();
   }
 }
@@ -31,7 +30,6 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch (error) {
-    console.error(error);
     return NextResponse.error();
   }
   const config = {

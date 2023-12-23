@@ -4,12 +4,12 @@ import { User } from "@/app/models/user";
 
 export async function GET(request: NextRequest) {
   if (!request.url) {
-    return NextResponse.error();
+    return new NextResponse(null, { status: 401 });
   }
   try {
     const cookie = request.cookies.get("session_token");
     if (!cookie) {
-      return NextResponse.error();
+      return new NextResponse(null, { status: 401 });
     }
 
     const decodedToken = jwtDecode(cookie.value) as User;
@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
     };
     return NextResponse.json(userInfo);
   } catch (error) {
-    console.error(error);
     return NextResponse.error();
   }
 }

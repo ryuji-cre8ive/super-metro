@@ -26,7 +26,6 @@ type TransactionProps = {
 };
 
 const RecentTransactions = ({ transactions }: TransactionProps) => {
-  console.log("transactions", transactions);
   const getColor = (transactionType: string) => {
     switch (transactionType) {
       case "TOPUP":
@@ -51,7 +50,6 @@ const RecentTransactions = ({ transactions }: TransactionProps) => {
     const date = new Date(time);
     return date.toLocaleString();
   };
-  console.log("transactions", transactions.length);
 
   return (
     <Container maxWidth="lg">

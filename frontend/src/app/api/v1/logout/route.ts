@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch (error) {
-    console.error(error);
     return NextResponse.error();
   }
   const config = {

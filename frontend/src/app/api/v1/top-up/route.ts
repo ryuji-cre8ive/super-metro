@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch (error) {
-    console.error(error);
     return NextResponse.error();
   }
   const config = {
@@ -31,6 +30,6 @@ export async function POST(request: NextRequest) {
     });
     return bffRes;
   } catch (error) {
-    return NextResponse.error();
+    return new NextResponse(null, { status: 401, statusText: "Unauthorized" });
   }
 }

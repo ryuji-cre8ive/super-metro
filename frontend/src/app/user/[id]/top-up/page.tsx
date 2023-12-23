@@ -17,6 +17,7 @@ import axios from "@/api/axiosConfig";
 import { AxiosResponse } from "axios";
 import Card from "./components/Card";
 import { Topup } from "@/components/TopUp";
+import { useRouter } from "next/navigation";
 
 const TopUp = () => {
   const { user, topUp } = useAuth();
@@ -27,6 +28,7 @@ const TopUp = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [cardNumber, setCardNumber] = useState<string>("");
 
+  const router = useRouter();
   useEffect(() => {
     if (!user) return;
     getCardNumber(user.id);
@@ -106,21 +108,27 @@ const TopUp = () => {
     }
     if (!user) return;
     setLoading(true);
-    try {
-      axios
-        .post("/top-up", { valance: Number(amount), id: user.id })
-        .then((res: AxiosResponse) => {
-          if (res.status !== 200) return;
-          topUp(user, Number(amount));
-          window.localStorage.setItem("session_token", res.data.sessionToken);
-          setText(SnackBarTextSuccess);
-          setSuccessOpen(true);
-          setAmount(null);
-          setLoading(false);
-        });
-    } catch (e) {
-      setLoading(false);
-    }
+
+    axios
+      .post("/top-up", { valance: Number(amount), id: user.id })
+      .then((res: AxiosResponse) => {
+        if (res.status !== 200) {
+          throw new Error("Request failed with status code " + res.status);
+        }
+        topUp(user, Number(amount));
+        setText(SnackBarTextSuccess);
+        setSuccessOpen(true);
+        setAmount(null);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setErrOpen(true);
+        setLoading(false);
+        if (e.response.status === 401) {
+          setText("Please login first");
+          return router.push("/signin");
+        }
+      });
   };
 
   return (

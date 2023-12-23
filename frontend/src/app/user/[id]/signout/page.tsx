@@ -28,7 +28,6 @@ export default function SignOutPage() {
       router.push("/");
     } catch (error) {
       setOpen(true);
-      console.log(error);
     }
   };
   return (
