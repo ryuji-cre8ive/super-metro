@@ -41,7 +41,7 @@ func (s *paymentStore) Get(userId string) (*domain.Payment, error) {
 	var payment *domain.Payment
 	result := s.DB.Where("user_id = ? AND deleted_at IS NULL", userId).First(&payment)
 	if result.Error != nil {
-		return nil, nil
+		return nil, result.Error
 	}
-	return payment, result.Error
+	return payment, nil
 }
