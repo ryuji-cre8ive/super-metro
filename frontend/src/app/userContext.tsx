@@ -6,9 +6,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { useCookies } from "react-cookie";
 import { User } from "@/app/models/user";
-import { jwtDecode } from "jwt-decode";
 import axios from "@/api/axiosConfig";
 // Contextを作成
 const AuthContext = createContext({
