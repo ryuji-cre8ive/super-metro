@@ -20,9 +20,6 @@ const AuthContext = createContext({
 
 // AuthProviderコンポーネントを作成
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // const [cookies] = useCookies<string>(["session_token"]);
-  // console.log("token", cookies.session_token);
-  // const token = cookies.session_token;
   const getUserInfo = async () => {
     try {
       const res = await axios.get("/user");
@@ -46,7 +43,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         valance: data.valance,
         sessionToken: "",
       };
-      console.log(userInfo);
 
       setUser(userInfo);
     };
