@@ -1,8 +1,11 @@
 package stores
 
 import (
+	"errors"
 	"testing"
+	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/xerrors"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"gorm.io/driver/postgres"
@@ -74,60 +77,60 @@ func TestTransactionStore_Add(t *testing.T) {
 	}
 }
 
-// func TestTransactionStore_Get(t *testing.T) {
-// 	type input struct {
-// 		userId string
-// 	}
+func TestTransactionStore_Get(t *testing.T) {
+	type input struct {
+		userId string
+	}
 
-// 	tests := map[string]struct {
-// 		input   input
-// 		wantErr bool
-// 	}{
-// 		"success": {
-// 			input: input{
-// 				userId: "1",
-// 			},
-// 			wantErr: false,
-// 		},
-// 		"failed": {
-// 			input: input{
-// 				userId: "2",
-// 			},
-// 			wantErr: true,
-// 		},
-// 	}
+	tests := map[string]struct {
+		input   input
+		wantErr bool
+	}{
+		"success": {
+			input: input{
+				userId: "1",
+			},
+			wantErr: false,
+		},
+		"failed": {
+			input: input{
+				userId: "2",
+			},
+			wantErr: true,
+		},
+	}
 
-// 	for name, tt := range tests {
-// 		t.Run(name, func(t *testing.T) {
-// 			sqlDB, mock, _ := sqlmock.New()
-// 			defer sqlDB.Close()
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			sqlDB, mock, _ := sqlmock.New()
+			defer sqlDB.Close()
 
-// 			db, _ := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+			db, _ := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
 
-// 			s := &transactionStore{
-// 				DB: db,
-// 			}
+			s := &transactionStore{
+				DB: db,
+			}
 
-// 			if tt.wantErr {
-// 				mock.ExpectQuery("^SELECT (.+) FROM \"transactions\" WHERE user_id = (.+)").
-// 					WithArgs(tt.input.userId).
-// 					WillReturnError(errors.New("database error"))
-// 			} else {
-// 				rows := sqlmock.NewRows([]string{"id", "user_id", "payment_id", "amount", "transaction_type", "created_at", "updated_at"}).
-// 					AddRow(uuid.Must(uuid.NewRandom()).String(), tt.input.userId, "1", 100, "debit", time.Now(), time.Now())
-// 				mock.ExpectQuery("^SELECT (.+) FROM \"transactions\" WHERE user_id = (.+)").
-// 					WithArgs(tt.input.userId).
-// 					WillReturnRows(rows)
-// 			}
+			if tt.wantErr {
+				mock.ExpectQuery("^SELECT (.+) FROM \"transactions\" WHERE user_id = (.+)").
+					WithArgs(tt.input.userId).
+					WillReturnError(errors.New("database error"))
+			} else {
+				rows := sqlmock.NewRows([]string{"id", "user_id", "payment_id", "amount", "transaction_type", "created_at", "updated_at"}).
+					AddRow(uuid.Must(uuid.NewRandom()).String(), tt.input.userId, "1", 100, "debit", time.Now(), time.Now())
+				mock.ExpectQuery("^SELECT (.+) FROM \"transactions\" WHERE user_id = (.+)").
+					WithArgs(tt.input.userId).
+					WillReturnRows(rows)
+			}
 
-// 			_, err := s.Get(tt.input.userId)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
-// 			}
+			_, err := s.Get(tt.input.userId)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
+			}
 
-// 			if err := mock.ExpectationsWereMet(); err != nil {
-// 				t.Errorf("there were unfulfilled expectations: %s", err)
-// 			}
-// 		})
-// 	}
-// }
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("there were unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
