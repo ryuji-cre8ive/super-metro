@@ -24,9 +24,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // console.log("token", cookies.session_token);
   // const token = cookies.session_token;
   const getUserInfo = async () => {
-    const res = await axios.get("/user");
-    console.log(res.data);
-    return res.data;
+    try {
+      const res = await axios.get("/user");
+      return res.data;
+    } catch (error) {
+      return null;
+    }
   };
 
   useEffect(() => {
