@@ -3,6 +3,7 @@ package stores
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"gorm.io/driver/postgres"
@@ -123,6 +124,63 @@ func TestPaymentStore_Delete(t *testing.T) {
 			err := s.Delete(tt.input.userId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("there were unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
+
+func TestPaymentStore_Get(t *testing.T) {
+	type input struct {
+		userId string
+	}
+
+	tests := map[string]struct {
+		input   input
+		wantErr bool
+	}{
+		"success": {
+			input: input{
+				userId: "1",
+			},
+			wantErr: false,
+		},
+		"failed": {
+			input: input{
+				userId: "2",
+			},
+			wantErr: true,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			sqlDB, mock, _ := sqlmock.New()
+			defer sqlDB.Close()
+
+			db, _ := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+
+			s := &paymentStore{
+				DB: db,
+			}
+
+			if tt.wantErr {
+				mock.ExpectQuery(".*SELECT \\* FROM \"payments\" WHERE user_id = \\$1 AND deleted_at IS NULL ORDER BY \"payments\".\"id\" LIMIT 1.*").
+					WithArgs(tt.input.userId).
+					WillReturnError(errors.New("database error"))
+			} else {
+				rows := sqlmock.NewRows([]string{"id", "user_id", "card_number", "expiry_date", "cvv", "created_at", "updated_at", "deleted_at"}).
+					AddRow("1", "1", "encryptedCardNumber", "encryptedExpiryDate", "encryptedCVV", time.Now(), time.Now(), nil)
+				mock.ExpectQuery("SELECT \\* FROM \"payments\" WHERE user_id = \\$1 AND deleted_at IS NULL ORDER BY \"payments\".\"id\" LIMIT 1").
+					WithArgs(tt.input.userId).
+					WillReturnRows(rows)
+			}
+			_, err := s.Get(tt.input.userId)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			if err := mock.ExpectationsWereMet(); err != nil {
