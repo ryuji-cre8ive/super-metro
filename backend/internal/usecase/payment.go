@@ -43,5 +43,30 @@ func (u *paymentUsecase) Delete(c echo.Context, userId string) error {
 }
 
 func (u *paymentUsecase) Get(c echo.Context, userId string) (*domain.Payment, error) {
-	return u.stores.Payment.Get(userId)
+	userPayment, err := u.stores.Payment.Get(userId)
+	if err != nil {
+		return nil, err
+	}
+	key := []byte(userId)[:32] // AES-256を選択するために32バイトを使用します。userIDはuuidで、36バイトですが、最初の32バイトだけを使用します。
+
+	decryptedCardNumber, err := utils.Decrypt(userPayment.CardNumber, key)
+	if err != nil {
+		return nil, err
+	}
+
+	decryptedExpiryDate, err := utils.Decrypt(userPayment.ExpiryDate, key)
+	if err != nil {
+		return nil, err
+	}
+
+	decryptedCVV, err := utils.Decrypt(userPayment.CVV, key)
+	if err != nil {
+		return nil, err
+	}
+
+	userPayment.CardNumber = string(decryptedCardNumber)
+	userPayment.ExpiryDate = string(decryptedExpiryDate)
+	userPayment.CVV = string(decryptedCVV)
+
+	return userPayment, nil
 }

@@ -198,9 +198,9 @@ func TestPaymentUsecase_Get(t *testing.T) {
 			},
 			want: &domain.Payment{
 				UserID:     "6d1c3e1b-d068-431f-b188-a436ac54ce52",
-				CardNumber: "1234567890123456",
-				ExpiryDate: "1234",
-				CVV:        "123",
+				CardNumber: "2222333344445555",
+				ExpiryDate: "1122",
+				CVV:        "222",
 				CreatedAt:  time.Date(2023, time.December, 2, 23, 3, 51, 115734000, time.Local),
 				UpdatedAt:  time.Date(2023, time.December, 2, 23, 3, 51, 115734000, time.Local),
 			},
@@ -208,9 +208,9 @@ func TestPaymentUsecase_Get(t *testing.T) {
 			mockFunc: func(m *mock.MockPaymentStore) {
 				m.EXPECT().Get("6d1c3e1b-d068-431f-b188-a436ac54ce52").Return(&domain.Payment{
 					UserID:     "6d1c3e1b-d068-431f-b188-a436ac54ce52",
-					CardNumber: "1234567890123456",
-					ExpiryDate: "1234",
-					CVV:        "123",
+					CardNumber: "oijncKLVhcNUbunWUxxr6adS7B3O0IYK9DkDIa8xtxI=",
+					ExpiryDate: "w2Q4Cz8IzR6haGUHfDKceTgPysk=",
+					CVV:        "A2bHOk9KVG3AnPhT3NRijNOgFQ==",
 					CreatedAt:  time.Date(2023, time.December, 2, 23, 3, 51, 115734000, time.Local),
 					UpdatedAt:  time.Date(2023, time.December, 2, 23, 3, 51, 115734000, time.Local),
 				}, nil)

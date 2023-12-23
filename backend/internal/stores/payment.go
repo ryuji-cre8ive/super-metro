@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/ryuji-cre8ive/super-metro/internal/domain"
-	"github.com/ryuji-cre8ive/super-metro/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -44,25 +43,5 @@ func (s *paymentStore) Get(userId string) (*domain.Payment, error) {
 	if result.Error != nil {
 		return nil, nil
 	}
-	key := []byte(userId)[:32] // AES-256を選択するために32バイトを使用します。userIDはuuidで、36バイトですが、最初の32バイトだけを使用します。
-
-	decryptedCardNumber, err := utils.Decrypt(payment.CardNumber, key)
-	if err != nil {
-		return nil, err
-	}
-
-	decryptedExpiryDate, err := utils.Decrypt(payment.ExpiryDate, key)
-	if err != nil {
-		return nil, err
-	}
-
-	decryptedCVV, err := utils.Decrypt(payment.CVV, key)
-	if err != nil {
-		return nil, err
-	}
-
-	payment.CardNumber = string(decryptedCardNumber)
-	payment.ExpiryDate = string(decryptedExpiryDate)
-	payment.CVV = string(decryptedCVV)
 	return payment, result.Error
 }
