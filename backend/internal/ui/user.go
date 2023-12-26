@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -39,6 +40,10 @@ func (h *userHandler) Create(c echo.Context) error {
 	name := param.Name
 	password := param.Password
 	email := param.Email
+	user, _ := h.UserUsecase.FindByEmail(c, email)
+	if user != nil {
+		return c.String(400, "This email is already registered")
+	}
 	createErr := h.UserUsecase.Create(c, email, name, password)
 	if createErr != nil {
 		return xerrors.Errorf("failed to post User: %w", createErr)
@@ -56,7 +61,8 @@ func (h *userHandler) Login(c echo.Context) error {
 	email := param.Email
 	user, loginErr := h.UserUsecase.FindByEmail(c, email)
 	if loginErr != nil {
-		return xerrors.Errorf("failed to login: %w", loginErr)
+		fmt.Println("failed to login")
+		return c.String(401, "failed to login\nPlease check your email or password")
 	}
 	compareErr := utils.CheckHashPassword(user.Password, password)
 	if compareErr != nil {
