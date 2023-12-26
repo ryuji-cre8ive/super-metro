@@ -25,7 +25,7 @@ type (
 )
 
 func (u *userUsecase) Create(ctx echo.Context, email string, userName string, password string) error {
-	encryptedPassword, err := u.encrypt.PasswordEncrypt(password)
+	encryptedPassword, err := utils.PasswordEncrypt(password)
 	if err != nil {
 		return xerrors.Errorf("failed to encrypt password: %w", err)
 	}
