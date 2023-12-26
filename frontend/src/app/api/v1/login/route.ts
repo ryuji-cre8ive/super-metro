@@ -35,13 +35,12 @@ export async function POST(request: NextRequest) {
   const config = {
     method: request.method.toLowerCase(),
     url: url,
-    headers: Object.fromEntries(request.headers.entries()),
     data: body,
   };
   try {
     const res = await axios(config);
     if (!res.headers.authorization) {
-      return NextResponse.error();
+      return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
     const authToken = res.headers.authorization.split(" ")[1];
     const bffRes = NextResponse.json(res.data);
@@ -52,7 +51,10 @@ export async function POST(request: NextRequest) {
       sameSite: "lax",
     });
     return bffRes;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response && error.response.status === 401) {
+      return NextResponse.json({ status: 401, message: error.response.data });
+    }
     return NextResponse.error();
   }
 }
