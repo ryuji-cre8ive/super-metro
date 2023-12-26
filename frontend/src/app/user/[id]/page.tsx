@@ -26,6 +26,10 @@ export default function Page({ params }: { params: { id: string } }) {
   };
 
   const handleClickButton = () => {
+    if (!originInput || !destinationInput) {
+      alert("please fill in both fields");
+      return;
+    }
     setOrigin(originInput);
     setDestination(destinationInput);
   };
