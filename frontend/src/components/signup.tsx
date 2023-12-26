@@ -43,8 +43,23 @@ export default function SignUp({ onSubmit }: SignInFormProps) {
   const [password, setPassword] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
+  const [error, setError] = React.useState({
+    email: false,
+    password: false,
+    firstName: false,
+    lastName: false,
+  });
   const handleClick = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!email || !password || !firstName || !lastName) {
+      setError({
+        email: !email,
+        password: !password,
+        firstName: !firstName,
+        lastName: !lastName,
+      });
+      return;
+    }
     const username = firstName + lastName;
     onSubmit(email, password, username);
   };
@@ -82,6 +97,8 @@ export default function SignUp({ onSubmit }: SignInFormProps) {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  error={error.firstName}
+                  helperText={error.firstName ? "First name is required" : ""}
                   onChange={(e) => setFirstName(e.target.value)}
                 />
               </Grid>
@@ -93,6 +110,8 @@ export default function SignUp({ onSubmit }: SignInFormProps) {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  error={error.lastName}
+                  helperText={error.lastName ? "Last name is required" : ""}
                   onChange={(e) => setLastName(e.target.value)}
                 />
               </Grid>
@@ -104,6 +123,8 @@ export default function SignUp({ onSubmit }: SignInFormProps) {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  error={error.email}
+                  helperText={error.email ? "Email is required" : ""}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>
@@ -116,6 +137,8 @@ export default function SignUp({ onSubmit }: SignInFormProps) {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  error={error.password}
+                  helperText={error.password ? "Password is required" : ""}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </Grid>

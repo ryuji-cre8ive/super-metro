@@ -37,9 +37,19 @@ function Copyright(props: any) {
 const LoginForm = ({ onSubmit }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (email === "") {
+      setEmailError(true);
+      return;
+    }
+    if (password === "") {
+      setPasswordError(true);
+      return;
+    }
     onSubmit(email, password);
   };
 
@@ -70,7 +80,14 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
             name="email"
             autoComplete="email"
             autoFocus
-            onChange={(event) => setEmail(event.target.value)}
+            error={emailError}
+            helperText={emailError ? "Email is required" : ""}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              if (event.target.value !== "") {
+                setEmailError(false);
+              }
+            }}
           />
           <TextField
             margin="normal"
@@ -81,7 +98,14 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
             type="password"
             id="password"
             autoComplete="current-password"
-            onChange={(event) => setPassword(event.target.value)}
+            error={passwordError}
+            helperText={passwordError ? "Password is required" : ""}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              if (event.target.value !== "") {
+                setPasswordError(false);
+              }
+            }}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -96,11 +120,6 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
             Sign In
           </Button>
           <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
             <Grid item>
               <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
