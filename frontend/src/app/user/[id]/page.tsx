@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import Map from "@/components/GoogleMap";
@@ -9,8 +9,8 @@ import RouteDetails from "@/components/RouteDetail";
 
 export default function Page({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const origin = useRef<string>("");
-  const destination = useRef<string>("");
+  const [origin, setOrigin] = useState<string>("");
+  const [destination, setDestination] = useState<string>("");
   const [originInput, setOriginInput] = useState<string>("");
   const [destinationInput, setDestinationInput] = useState<string>("");
 
@@ -30,8 +30,8 @@ export default function Page({ params }: { params: { id: string } }) {
       alert("please fill in both fields");
       return;
     }
-    origin.current = originInput;
-    destination.current = destinationInput;
+    setOrigin(originInput);
+    setDestination(destinationInput);
   };
 
   const handleSetRoutes = (route: google.maps.DirectionsResult) => {
@@ -59,8 +59,8 @@ export default function Page({ params }: { params: { id: string } }) {
       <section style={{ display: "flex" }}>
         <div style={{ flex: "7", margin: "10px" }}>
           <Map
-            origin={origin.current}
-            destination={destination.current}
+            origin={origin}
+            destination={destination}
             handleSetRoutes={handleSetRoutes}
             directions={directions}
           />
