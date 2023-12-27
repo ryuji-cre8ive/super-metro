@@ -32,7 +32,6 @@ export default function SignupPage() {
 
   return (
     <main>
-      <h1>This is a sign up form</h1>
       <Signup onSubmit={onSubmit} />
       <CustomSnackBar
         open={open}

@@ -21,9 +21,7 @@ export default function Home() {
         email,
         password,
       });
-      console.log(res);
       if (res.status === 200 && res.data.status !== 401) {
-        // document.cookie = `session_token=${res.data.sessionToken}; path=/;`;
         const userInfo: User = {
           id: res.data.id,
           userName: res.data.userName,
@@ -38,7 +36,6 @@ export default function Home() {
       } else {
         setOpen(true);
         setMessage(res.data.message);
-        console.log("login failed", res);
       }
     } catch (err) {
       console.log("login failed", err);
@@ -47,7 +44,6 @@ export default function Home() {
 
   return (
     <main>
-      <h2>This is a login form </h2>
       <LoginForm onSubmit={onSubmit} />
       <CustomSnackBar
         open={open}
