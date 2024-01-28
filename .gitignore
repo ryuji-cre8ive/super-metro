@@ -34,8 +34,11 @@ frontend/.vercel
 frontend/*.tsbuildinfo
 frontend/next-env.d.ts
 
-.env
+backend/.env
+frontend/.env
 
 backend/dbconfig.yml
 
 backend/tmp/
+
+backend/data
