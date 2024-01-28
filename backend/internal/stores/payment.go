@@ -39,7 +39,7 @@ func (s *paymentStore) Delete(userId string) error {
 
 func (s *paymentStore) Get(userId string) (*domain.Payment, error) {
 	var payment *domain.Payment
-	result := s.DB.Where("user_id = ? AND deleted_at IS NULL", userId).First(&payment)
+	result := s.DB.Where("user_id = ? AND deleted_at IS NULL", userId).Find(&payment)
 	if result.Error != nil {
 		return nil, result.Error
 	}

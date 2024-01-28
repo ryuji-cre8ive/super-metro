@@ -16,6 +16,7 @@ type (
 		GetSession(ctx echo.Context, id string) (string, error)
 		SetSession(ctx echo.Context, id string, session string) error
 		IsCookieExist(ctx echo.Context, cookieValue string) error
+		GetAmount(ctx echo.Context, id string) (int, error)
 	}
 
 	userUsecase struct {
@@ -58,4 +59,8 @@ func (u *userUsecase) SetSession(ctx echo.Context, id string, session string) er
 
 func (u *userUsecase) IsCookieExist(ctx echo.Context, cookieValue string) error {
 	return u.stores.User.IsCookieExist(cookieValue)
+}
+
+func (u *userUsecase) GetAmount(ctx echo.Context, id string) (int, error) {
+	return u.stores.User.GetAmount(id)
 }

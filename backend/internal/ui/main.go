@@ -37,6 +37,8 @@ func SetApi(e *echo.Echo, h *Handler) {
 	authGroup.GET("/credit-card/:userID", h.PaymentHandler.Get)
 	authGroup.POST("/credit-card/add", h.PaymentHandler.Add)
 
+	authGroup.GET("/amount/:userID", h.UserHandler.GetAmount)
+
 	authGroup.GET("/transaction/:userID", h.TransactionHandler.Get)
 }
 

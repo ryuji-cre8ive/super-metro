@@ -44,6 +44,9 @@ func (u *paymentUsecase) Delete(c echo.Context, userId string) error {
 
 func (u *paymentUsecase) Get(c echo.Context, userId string) (*domain.Payment, error) {
 	userPayment, err := u.stores.Payment.Get(userId)
+	if userPayment.CardNumber == "" {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}

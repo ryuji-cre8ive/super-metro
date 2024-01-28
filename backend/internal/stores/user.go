@@ -18,6 +18,7 @@ type (
 		GetSession(id string) (string, error)
 		SetSession(id string, session string) error
 		IsCookieExist(cookieValue string) error
+		GetAmount(id string) (int, error)
 	}
 
 	userStore struct {
@@ -84,4 +85,13 @@ func (s *userStore) IsCookieExist(cookieValue string) error {
 		return xerrors.Errorf("cannot find user by session_token: %w", result.Error)
 	}
 	return nil
+}
+
+func (s *userStore) GetAmount(id string) (int, error) {
+	var user domain.User
+	result := s.DB.Where("id = ?", id).Find(&user)
+	if result.Error != nil {
+		return 0, xerrors.Errorf("cannot find user by id: %w", result.Error)
+	}
+	return user.Valance, nil
 }

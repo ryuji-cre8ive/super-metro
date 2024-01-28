@@ -22,6 +22,7 @@ type (
 		Cookie(c echo.Context) error
 		IsCookieExist(c echo.Context, cookieValue string) error
 		CheckCookieExpiration() echo.MiddlewareFunc
+		GetAmount(c echo.Context) error
 	}
 
 	userHandler struct {
@@ -114,8 +115,9 @@ func (h *userHandler) TopUp(c echo.Context) error {
 	}
 	id := param.ID
 	amount := param.Valance
-
-	user, topUpErr := h.UserUsecase.TopUp(c, id, amount)
+	fmt.Println("id", id)
+	fmt.Println("amount", amount)
+	_, topUpErr := h.UserUsecase.TopUp(c, id, amount)
 	if topUpErr != nil {
 		return xerrors.Errorf("failed to top up: %w", topUpErr)
 	}
@@ -128,24 +130,24 @@ func (h *userHandler) TopUp(c echo.Context) error {
 		return xerrors.Errorf("failed to post Transaction: %w", transactionErr)
 	}
 
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["email"] = user.Email
-	claims["userName"] = user.Name
-	claims["id"] = user.ID
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-	claims["valance"] = user.Valance
+	// token := jwt.New(jwt.SigningMethodHS256)
+	// claims := token.Claims.(jwt.MapClaims)
+	// claims["email"] = user.Email
+	// claims["userName"] = user.Name
+	// claims["id"] = user.ID
+	// claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	// claims["valance"] = user.Valance
 
-	t, err := token.SignedString([]byte("your_secret_key"))
-	if err != nil {
-		return xerrors.Errorf("failed to create JWT: %w", err)
-	}
+	// t, err := token.SignedString([]byte("your_secret_key"))
+	// if err != nil {
+	// 	return xerrors.Errorf("failed to create JWT: %w", err)
+	// }
 
-	if setSessionErr := h.UserUsecase.SetSession(c, user.ID, t); setSessionErr != nil {
-		return xerrors.Errorf("failed to set session: %w", setSessionErr)
-	}
+	// if setSessionErr := h.UserUsecase.SetSession(c, user.ID, t); setSessionErr != nil {
+	// 	return xerrors.Errorf("failed to set session: %w", setSessionErr)
+	// }
 
-	return c.JSON(200, map[string]interface{}{"sessionToken": t})
+	return c.String(200, "success")
 }
 
 func (h *userHandler) Cookie(c echo.Context) error {
@@ -167,7 +169,7 @@ func (h *userHandler) CheckCookieExpiration() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			cookie, err := c.Cookie("session_token")
 			if err != nil {
-				return echo.NewHTTPError(http.StatusUnauthorized, "Need to Authorize: "+err.Error())
+				return echo.NewHTTPError(http.StatusUnauthorized, "you dont have cookie: "+err.Error())
 			}
 
 			if checkErr := h.IsCookieExist(c, cookie.Value); checkErr != nil {
@@ -185,4 +187,14 @@ func (h *userHandler) IsCookieExist(c echo.Context, cookieValue string) error {
 	}
 
 	return nil
+}
+
+func (h *userHandler) GetAmount(c echo.Context) error {
+	id := c.Param("userID")
+	fmt.Println("id", id)
+	amount, err := h.UserUsecase.GetAmount(c, id)
+	if err != nil {
+		return xerrors.Errorf("failed to get amount: %w", err)
+	}
+	return c.JSON(200, amount)
 }
