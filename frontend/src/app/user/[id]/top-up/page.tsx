@@ -1,11 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { TextField, Typography } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
-import SendIcon from "@mui/icons-material/Send";
-import Image from "next/image";
 import CustomSnackBar, { Severity } from "@/components/SnackBar";
-import EWalletPic from "../../../../../public/e-wallet.png";
 import {
   SnackBarTextErr,
   SnackBarTextSuccess,
@@ -17,21 +12,20 @@ import axios from "@/api/axiosConfig";
 import { AxiosResponse } from "axios";
 import Card from "./components/Card";
 import { Topup } from "@/components/TopUp";
-import { useRouter } from "next/navigation";
 
 const TopUp = () => {
-  const { user, topUp } = useAuth();
+  const { user } = useAuth();
   const [amount, setAmount] = useState<number | null>(null);
+  const [currentAmount, setCurrentAmount] = useState<number>(0); // [TODO
   const [errOpen, setErrOpen] = useState<boolean>(false);
   const [successOpen, setSuccessOpen] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [cardNumber, setCardNumber] = useState<string>("");
-
-  const router = useRouter();
   useEffect(() => {
     if (!user) return;
     getCardNumber(user.id);
+    getAmount(user.id);
   }, [user]);
 
   const getCardNumber = async (userId: string) => {
@@ -40,6 +34,14 @@ const TopUp = () => {
         return;
       }
       res.data.CardNumber && setCardNumber(res.data.CardNumber);
+    });
+  };
+
+  const getAmount = async (userId: string) => {
+    await axios.get(`/amount/${userId}`).then((res) => {
+      if (!res.data) return;
+      console.log(res.data);
+      res.data && setCurrentAmount(res.data);
     });
   };
 
@@ -115,20 +117,20 @@ const TopUp = () => {
         if (res.status !== 200) {
           throw new Error("Request failed with status code " + res.status);
         }
-        topUp(user, Number(amount));
         setText(SnackBarTextSuccess);
         setSuccessOpen(true);
         setAmount(null);
+        setCurrentAmount(currentAmount + Number(amount));
         setLoading(false);
-      })
-      .catch((e) => {
-        setErrOpen(true);
-        setLoading(false);
-        if (e.response.status === 401) {
-          setText("Please login first");
-          return router.push("/signin");
-        }
       });
+    // .catch((e: AxiosError) => {
+    //   setErrOpen(true);
+    //   setLoading(false);
+    //   if (e.status === 401) {
+    //     setText("Please login first");
+    //     return router.push("/signin");
+    //   }
+    // });
   };
 
   return (
@@ -148,7 +150,7 @@ const TopUp = () => {
         onChangeCardNumber={onChangeCardNumber}
       />
       <Topup
-        currentBalance={user ? user.valance : 0}
+        currentBalance={currentAmount}
         amount={amount}
         handleTopUp={handleTopUp}
         handleAmount={handleAmount}
